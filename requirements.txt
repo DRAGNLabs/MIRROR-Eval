@@ -1,0 +1,7 @@
+# Core dependencies for MIRROR-Eval
+# Install with: pip install -r requirements.txt
+
+# No core dependencies yet - will be added as the project develops
+
+# Development dependencies (optional)
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
