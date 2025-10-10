@@ -1,26 +1,13 @@
 # MIRROR-Eval
 
 MIRROR-Eval is an evaluation framework for MIRROR models.
-test
+
 ## Installation
 
-Choose one of the following workflows based on your use case:
-
-### For Users: Installing the Package
-
-If you just want to use MIRROR-Eval in your projects:
-
 **Using pip:**
-```bash
-# Clone the repository
-git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
-cd MIRROR-Eval
-
-# Install the package
-pip install .
-```
 
 **Using conda:**
+
 ```bash
 # Clone the repository
 git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
@@ -29,41 +16,13 @@ cd MIRROR-Eval
 # Create and activate conda environment
 conda env create -f environment.yml
 conda activate mirror-eval
-```
 
-### For Developers: Setting Up the Development Environment
+pip install .
 
-If you want to contribute to MIRROR-Eval or modify the code:
-
-**Using pip:**
-```bash
-# Clone the repository
-git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
-cd MIRROR-Eval
-
-# Install in editable mode with development dependencies
+# If you're doing development:
 pip install -e ".[dev]"
 
-# Or install using requirements files
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
 ```
-
-**Using conda:**
-```bash
-# Clone the repository
-git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
-cd MIRROR-Eval
-
-# Create and activate conda environment (installs package in editable mode)
-conda env create -f environment.yml
-conda activate mirror-eval
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-```
-
-**Note:** The `-e` flag installs the package in "editable" mode, meaning changes to the source code are immediately reflected without reinstalling.
 
 ## Building the Package
 
