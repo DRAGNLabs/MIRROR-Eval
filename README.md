@@ -4,41 +4,66 @@ MIRROR-Eval is an evaluation framework for MIRROR models.
 
 ## Installation
 
-### Option 1: Install with pip
+Choose one of the following workflows based on your use case:
 
-You can install the package directly from source:
+### For Users: Installing the Package
 
+If you just want to use MIRROR-Eval in your projects:
+
+**Using pip:**
 ```bash
-pip install -e .
+# Clone the repository
+git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
+cd MIRROR-Eval
+
+# Install the package
+pip install .
 ```
 
-For development dependencies:
-
+**Using conda:**
 ```bash
-pip install -e ".[dev]"
-```
+# Clone the repository
+git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
+cd MIRROR-Eval
 
-Or using requirements files:
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For development
-```
-
-### Option 2: Install with conda
-
-Create a conda environment from the environment file:
-
-```bash
+# Create and activate conda environment
 conda env create -f environment.yml
 conda activate mirror-eval
 ```
 
-To update an existing environment:
+### For Developers: Setting Up the Development Environment
 
+If you want to contribute to MIRROR-Eval or modify the code:
+
+**Using pip:**
 ```bash
-conda env update -f environment.yml --prune
+# Clone the repository
+git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
+cd MIRROR-Eval
+
+# Install in editable mode with development dependencies
+pip install -e ".[dev]"
+
+# Or install using requirements files
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
+
+**Using conda:**
+```bash
+# Clone the repository
+git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
+cd MIRROR-Eval
+
+# Create and activate conda environment (installs package in editable mode)
+conda env create -f environment.yml
+conda activate mirror-eval
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+```
+
+**Note:** The `-e` flag installs the package in "editable" mode, meaning changes to the source code are immediately reflected without reinstalling.
 
 ## Building the Package
 
