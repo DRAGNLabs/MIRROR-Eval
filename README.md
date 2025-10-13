@@ -73,7 +73,6 @@ MIRROR-Eval/
 ├── tests/
 ├── pyproject.toml
 ├── environment.yml
-├── requirements.txt
 ├── requirements-dev.txt
 ├── README.md
 └── LICENSE
