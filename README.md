@@ -4,18 +4,6 @@ MIRROR-Eval is an evaluation framework for MIRROR models.
 
 ## Installation
 
-**Using pip:**
-
-```bash
-# Clone the repository
-git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
-cd MIRROR-Eval
-
-# Install with pip
-pip install .
-
-# If you're doing development:
-pip install -e ".[dev]"
 **Using conda:**
 
 ```bash
