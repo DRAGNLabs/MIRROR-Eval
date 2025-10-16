@@ -26,5 +26,6 @@ def launch_creativity_evaluation():
         print("Submitting job to SLURM...")
         rendered_slurm_script = render_slurm_script(script_name="creativity_metric.py")
         print(rendered_slurm_script)
+        # TODO: actually submit the job
     else:
         run_metric()
