@@ -1,4 +1,4 @@
-from huggingface_hub import login
+import subprocess
 
 from mirroreval.call_hf_model import (
     download_hf_model,
@@ -13,11 +13,12 @@ from mirroreval.creativity.creativity_metric import run_metric
 def launch_creativity_evaluation():
     print("MIRROR-Eval: Creativity evaluation starting...")
 
-    # Ensure we're logged in to Hugging Face
-    login()
-
     # Download models/data/tokenizers if necessary
-    models = ["meta-llama/Llama-3.3-70B-Instruct", "google/gemma-7b", "Qwen/Qwen3-0.6B"]
+    models = [
+        "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "google/gemma-7b",
+        "Qwen/Qwen3-0.6B",
+    ]
     for model in models:
         download_hf_model(model)
 
@@ -26,6 +27,9 @@ def launch_creativity_evaluation():
         print("Submitting job to SLURM...")
         rendered_slurm_script = render_slurm_script(script_name="creativity_metric.py")
         print(rendered_slurm_script)
-        # TODO: actually submit the job
+        result = subprocess.run(
+            ["sbatch"], input=rendered_slurm_script, text=True, capture_output=True
+        )
+        print("SLURM submission result:", result.stdout)
     else:
         run_metric()
