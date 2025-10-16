@@ -1,6 +1,6 @@
 from .config import settings, init_settings
 import argparse
-from .creativity import creativity
+from mirroreval.creativity.creativity_entrypoint import launch_creativity_evaluation
 from .slurm_utilities import render_slurm_script
 
 
@@ -32,10 +32,6 @@ def evaluate(config_path: str):
     init_settings(config_path)
 
     print(settings.as_dict())
+
     # Run creativity evaluation
-    if settings.slurm_job.use_slurm is True:
-        print("Submitting job to SLURM...")
-        rendered_slurm_script = render_slurm_script(script_name="creativity.py")
-        print(rendered_slurm_script)
-    else:
-        creativity()
+    launch_creativity_evaluation()
