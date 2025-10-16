@@ -1,0 +1,41 @@
+#!/bin/bash --login
+
+#SBATCH --job-name={{ job_name | default("my_job") }}
+#SBATCH --time={{ time | default("01:00:00") }}              # walltime
+#SBATCH --ntasks={{ ntasks | default(1) }}                   # number of processor cores (i.e. tasks)
+#SBATCH --nodes={{ nodes | default(1) }}                     # number of nodes
+#SBATCH --mem-per-cpu={{ mem_per_cpu | default("16G") }}      # memory per CPU core
+{% if gpus | default(0) | int > 0 -%}
+#SBATCH --gpus={{ gpus }}
+{% endif %}
+#SBATCH --requeue
+#SBATCH --signal=SIGHUP@90
+#SBATCH --output={{ output | default("%x_%j.out") }}
+
+{% if qos is defined %}
+#SBATCH --qos={{ qos }}
+{% endif %}
+
+# Environment setup
+export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
+
+echo "Running job: {{ job_name | default('my_job') }}"
+echo "Nodes: {{ nodes | default(1) }}, Tasks: {{ ntasks | default(1) }}, Time: {{ time | default('01:00:00') }}"
+
+# Load modules or activate environment
+{% if conda_env is defined %}
+echo "Activating conda environment: {{ conda_env }}"
+mamba activate {{ conda_env }}
+{% else %}
+echo "No conda environment specified."
+{% endif %}
+
+# Run commands
+nvidia-smi || echo "nvidia-smi not available"
+
+{% if script is defined %}
+echo "Running main script: {{ script }}"
+srun python3 {{ script }} {% if script_args is defined %}{{ script_args }}{% endif %}
+{% else %}
+echo "No main script specified — skipping run."
+{% endif %}

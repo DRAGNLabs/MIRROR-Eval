@@ -1,12 +1,10 @@
-"""
-Main evaluation entrypoint for MIRROR-Eval.
-
-This module provides the primary evaluation function for running the MIRROR
-evaluation pipeline.
-"""
+from .config import settings, init_settings
+import argparse
+from .creativity import creativity
+from .slurm_utilities import render_slurm_script
 
 
-def evaluate(*args, **kwargs):
+def evaluate(config_path: str):
     """
     Run the MIRROR evaluation pipeline.
 
@@ -30,13 +28,14 @@ def evaluate(*args, **kwargs):
         will be implemented in future versions.
     """
     print("MIRROR-Eval: Evaluation pipeline starting...")
-    print(f"Arguments: args={args}, kwargs={kwargs}")
 
-    # Placeholder implementation
-    results = {
-        "status": "success",
-        "message": "Evaluation pipeline placeholder - to be implemented",
-        "version": "0.1.0",
-    }
+    init_settings(config_path)
 
-    return results
+    print(settings.as_dict())
+    # Run creativity evaluation
+    if settings.slurm_job.use_slurm is True:
+        print("Submitting job to SLURM...")
+        rendered_slurm_script = render_slurm_script(script_name="creativity.py")
+        print(rendered_slurm_script)
+    else:
+        creativity()

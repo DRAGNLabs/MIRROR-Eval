@@ -1,0 +1,3 @@
+[slurm_job]
+use_slurm = true
+job_name = "test_job"

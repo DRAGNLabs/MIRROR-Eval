@@ -3,14 +3,14 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mirror-eval"
+name = "mirroreval"
 version = "0.1.0"
 description = "MIRROR evaluation framework"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "Apache-2.0"}
 authors = [
-    {name = "DRAGNLabs", email = "info@dragnlabs.com"}
+    {name = "Jay Orten", email = "jay.orten@gmail.com"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -24,7 +24,9 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-dependencies = []
+dependencies = [
+"jinja2"
+]
 
 [project.optional-dependencies]
 dev = [
@@ -45,6 +47,9 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"mirroreval" = ["slurm_templates/*.j2", "creativity.py"]
 
 [tool.black]
 line-length = 88
