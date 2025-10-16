@@ -1,6 +1,10 @@
 from huggingface_hub import login
 
-from mirroreval.call_hf_model import call_hf_model
+from mirroreval.call_hf_model import (
+    download_hf_model,
+    download_tokenizer,
+    download_dataset,
+)
 from mirroreval.config import settings
 from mirroreval.slurm_utilities import render_slurm_script
 from mirroreval.creativity.creativity_metric import run_metric
@@ -13,6 +17,9 @@ def launch_creativity_evaluation():
     login()
 
     # Download models/data/tokenizers if necessary
+    models = ["meta-llama/Llama-3.3-70B-Instruct", "google/gemma-7b", "Qwen/Qwen3-0.6B"]
+    for model in models:
+        download_hf_model(model)
 
     # Launch evaluation
     if settings.slurm_job.use_slurm is True:
