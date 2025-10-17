@@ -4,14 +4,14 @@ from dynaconf import Dynaconf
 settings = Dynaconf()
 
 
-def init_settings(settings_file=None):
+def init_settings(settings_file_path=None):
     """
     Optionally initialize the global `settings` object from a user-supplied TOML.
     This must be called before any other module accesses `settings` if a custom file is needed.
     """
     global settings
-    if settings_file:
-        settings.load_file(path=[settings_file])
+    if settings_file_path:
+        settings.load_file(path=[settings_file_path])
 
     # In the settings object, set the path to the settings file for reference
-    settings.settings_file_path = settings_file
+    settings.settings_file_path = settings_file_path
