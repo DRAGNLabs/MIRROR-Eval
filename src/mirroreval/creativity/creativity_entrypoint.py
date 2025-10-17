@@ -1,9 +1,9 @@
 import subprocess
 
-from mirroreval.call_hf_model import (
+from mirroreval.hf_utilities import (
     download_hf_model,
     download_tokenizer,
-    download_dataset,
+    download_hf_dataset,
 )
 from mirroreval.config import settings
 from mirroreval.slurm_utilities import render_slurm_script, submit_slurm_job
@@ -14,13 +14,14 @@ def launch_creativity_evaluation():
     print("MIRROR-Eval: Creativity evaluation starting...")
 
     # Download models/data/tokenizers if necessary
-    models = [
-        "meta-llama/Meta-Llama-3.1-8B-Instruct",
-        "google/gemma-7b",
-        "Qwen/Qwen3-0.6B",
-    ]
+    models = settings.creativity.models
+
+    dataset = "royal42/gcr-diversity"
+
     for model in models:
         download_hf_model(model)
+
+    download_hf_dataset(dataset)
 
     # Launch evaluation
     if settings.slurm_job.use_slurm is True:

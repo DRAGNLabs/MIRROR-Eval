@@ -1,51 +1,43 @@
-from mirroreval.call_hf_model import call_hf_model
+from mirroreval.hf_utilities import call_hf_model, load_hf_dataset
+from mirroreval.creativity.prompts import get_prompt
+from mirroreval.config import settings, init_settings
+
+import sys
 
 
 def run_metric():
-    input_line = {
-        "src": "ingredient pan fry add",
-        "set1": [
-            "Add the ingredient to the pan and fry it.",
-            "Fry the ingredient in the pan after you add it.",
-            "Once you add the ingredient to the pan, begin to fry.",
-            "To cook, add the chosen ingredient into the pan and start to fry.",
-        ],
-        "set2": [
-            "Fry the ingredient in the pan after you add it.",
-            "After being added to the pan, the ingredient is fried.",
-            "Once you add the ingredient to the pan, begin to fry.",
-            "Begin frying once the ingredient is added to the pan.",
-        ],
-        "set1_label": "original",
-        "set2_label": "para_b",
-        "Quality_Set1": 4,
-        "Quality_Set2": 4,
-        "Diversity_Set1": 3,
-        "Diversity_Set2": 2,
-        "llm_quality": 2,
-        "llm_diversity": 0,
-    }
+    dataset = load_hf_dataset("royal42/gcr-diversity")
 
-    input_text = f"Rate the diversity and quality of each of the next two sentences: {input_line["set1"]}, {input_line["set2"]}. Provide your answer as a tuple (Diversity_Set1, Quality_Set1, Diversity_Set2, Quality_Set2) where Diversity and Quality are rated on a scale from 1 to 4."
+    models = settings.creativity.models
 
-    print(input_text)
+    for model_name in models:
+        for split_name, split_dataset in dataset.items():
+            print(f"--- Split: {split_name} ---")
+            print(f"Number of examples: {len(split_dataset)}")
+            # Iterate through dataset
+            for input_line in split_dataset:
+                input_text = get_prompt(
+                    "default",
+                    set1=input_line["set1"],
+                    set2=input_line["set2"],
+                )
 
-    model_name_1 = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+                print(input_text)
 
-    model_name_2 = "google/gemma-7b"
+                output_1 = call_hf_model(model_name, input_text)
 
-    model_name_3 = "Qwen/Qwen3-0.6B"
-
-    output_1 = call_hf_model(model_name_1, input_text)
-
-    output_2 = call_hf_model(model_name_2, input_text)
-
-    output_3 = call_hf_model(model_name_3, input_text)
-
-    print(f"Model: {model_name_1}, Output: {output_1}")
-    print(f"Model: {model_name_2}, Output: {output_2}")
-    print(f"Model: {model_name_3}, Output: {output_3}")
+                print(f"Model: {model_name}, Output: {output_1}")
 
 
 if __name__ == "__main__":
+    # Parse arguments for settings file path
+    if len(sys.argv) > 1:
+        settings_file_path = sys.argv[1]
+
+        init_settings(settings_file_path)
+    else:
+        print("No settings file path provided.")
+        # Quit
+        sys.exit(1)
+
     run_metric()

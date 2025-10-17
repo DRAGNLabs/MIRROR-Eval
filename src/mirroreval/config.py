@@ -12,3 +12,6 @@ def init_settings(settings_file=None):
     global settings
     if settings_file:
         settings.load_file(path=[settings_file])
+
+    # In the settings object, set the path to the settings file for reference
+    settings.settings_file_path = settings_file

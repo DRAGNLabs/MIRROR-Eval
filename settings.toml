@@ -7,3 +7,11 @@ nodes = 1
 mem_per_cpu = "16G"
 gpus = 1
 conda_env = "mirror-eval"
+# qos = None
+
+[creativity]
+models = [
+    "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "google/gemma-7b",
+    "Qwen/Qwen3-0.6B",
+]

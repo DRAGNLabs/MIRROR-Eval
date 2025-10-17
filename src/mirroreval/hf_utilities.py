@@ -18,6 +18,11 @@ def download_tokenizer(tokenizer_name):
     print(f"Tokenizer downloaded to {cache_path}")
 
 
-def download_dataset(dataset_name):
-    dataset = load_dataset(dataset_name)
+def download_hf_dataset(dataset_name):
+    dataset = load_hf_dataset(dataset_name)
     print(f"Dataset {dataset_name} loaded with {len(dataset)} splits.")
+
+
+def load_hf_dataset(dataset_name):
+    dataset = load_dataset(dataset_name)
+    return dataset

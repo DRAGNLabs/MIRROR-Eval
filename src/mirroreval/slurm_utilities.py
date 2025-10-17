@@ -31,3 +31,5 @@ def submit_slurm_job(rendered_slurm_script: str) -> None:
         ["sbatch"], input=rendered_slurm_script, text=True, capture_output=True
     )
     print("SLURM submission result:", result.stdout)
+    if result.returncode != 0:
+        print("SLURM submission error:", result.stderr)
