@@ -3,6 +3,7 @@ from mirroreval.creativity.prompts import get_prompt
 from mirroreval.config import settings, init_settings
 
 import sys
+import json
 
 
 def run_metric():
@@ -28,10 +29,15 @@ def run_metric():
 
                 print(f"Model: {model_name}, Output: {output}")
 
-                # Save the output to a local file with a column for the model name and split name
-                with open(
-                        
-            
+                record = {
+                    "model_name": model_name,
+                    "split_name": split_name,
+                    "input": input_text,
+                    "output": output,
+                }
+
+                with open("results.jsonl", "a", encoding="utf-8") as f:
+                    f.write(json.dumps(record) + "\n")
 
 
 if __name__ == "__main__":
