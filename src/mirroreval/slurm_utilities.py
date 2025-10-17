@@ -16,6 +16,8 @@ def render_slurm_script(script_name: str) -> str:
     context = settings.slurm_job.to_dict()
     context["script"] = get_script_path(script_name)
 
+    print("SLURM context:", context)
+
     rendered_script = template.render(context)
 
     return rendered_script

@@ -14,4 +14,4 @@ def init_settings(settings_file_path=None):
         settings.load_file(path=[settings_file_path])
 
     # In the settings object, set the path to the settings file for reference
-    settings.settings_file_path = settings_file_path
+    settings.settings_file_path = str(settings_file_path)
