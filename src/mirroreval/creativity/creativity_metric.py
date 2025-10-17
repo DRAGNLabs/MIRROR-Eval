@@ -30,7 +30,7 @@ def run_metric():
 
     print(input_text)
 
-    model_name_1 = "meta-llama/Llama-3.3-70B-Instruct"
+    model_name_1 = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 
     model_name_2 = "google/gemma-7b"
 

@@ -29,7 +29,8 @@ dependencies = [
     "dynaconf",
     "transformers",
     "datasets",
-    "huggingface-hub"
+    "huggingface-hub",
+    "torch==2.8.0+cu129"
 ]
 
 [project.optional-dependencies]

@@ -12,5 +12,9 @@ dependencies:
   - transformers
   - numpy
   - torch
+  - pytest
+  - black
+  - flake8
   - pip:
     - -e .
+    - torch==2.8.0+cu129
