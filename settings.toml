@@ -7,7 +7,7 @@ nodes = 1
 mem_per_cpu = "16G"
 gpus = 1
 conda_env = "mirror-eval"
-# qos = None
+qos = "None"
 
 [creativity]
 models = [
