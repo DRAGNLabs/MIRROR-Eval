@@ -18,6 +18,8 @@
 
 # Environment setup
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
+# Disable HF Hub internet access
+export HF_HUB_OFFLINE=1
 
 echo "Running job: {{ job_name | default('my_job') }}"
 echo "Nodes: {{ nodes | default(1) }}, Tasks: {{ ntasks | default(1) }}, Time: {{ time | default('01:00:00') }}"

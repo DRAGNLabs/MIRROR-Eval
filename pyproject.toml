@@ -30,7 +30,7 @@ dependencies = [
     "transformers",
     "datasets",
     "huggingface-hub",
-    "torch==2.8.0+cu129"
+    "torch==2.8.0"
 ]
 
 [project.optional-dependencies]
