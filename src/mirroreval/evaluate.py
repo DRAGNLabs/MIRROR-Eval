@@ -1,10 +1,12 @@
-from .config import settings, init_settings
 import argparse
+from pathlib import Path
+
+from .config import settings, init_settings
 from mirroreval.creativity.creativity_entrypoint import launch_creativity_evaluation
 from .slurm_utilities import render_slurm_script
 
 
-def evaluate(config_path: str):
+def evaluate(settings_file_path):
     """
     Run the MIRROR evaluation pipeline.
 
@@ -29,7 +31,10 @@ def evaluate(config_path: str):
     """
     print("MIRROR-Eval: Evaluation pipeline starting...")
 
-    init_settings(config_path)
+    # Get the absolute path of the config file
+    settings_file_path = Path(settings_file_path).resolve()
+
+    init_settings(settings_file_path)
 
     print(settings.as_dict())
 

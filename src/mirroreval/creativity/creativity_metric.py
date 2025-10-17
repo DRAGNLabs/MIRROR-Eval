@@ -28,6 +28,8 @@ def run_metric():
 
                 print(f"Model: {model_name}, Output: {output_1}")
 
+                break  # For testing, remove in actual run
+
 
 if __name__ == "__main__":
     # Parse arguments for settings file path
