@@ -37,7 +37,7 @@ nvidia-smi || echo "nvidia-smi not available"
 
 {% if script is defined %}
 echo "Running main script: {{ script }}"
-srun python3 {{ script }} {% if settings_file_path is defined %}{{ settings_file_path }}{% endif %}
+srun python3 {{ script }} {{ settings_file_path }}
 {% else %}
 echo "No main script specified — skipping run."
 {% endif %}
