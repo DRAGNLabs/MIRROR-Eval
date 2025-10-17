@@ -1,3 +1,5 @@
+import subprocess
+
 from jinja2 import Environment, BaseLoader
 import importlib.resources as pkg_resources
 from mirroreval import slurm_templates
@@ -24,5 +26,8 @@ def get_script_path(script_name: str) -> Path:
         return path
 
 
-def submit_slurm_job(rendered_script: str) -> None:
-    pass
+def submit_slurm_job(rendered_slurm_script: str) -> None:
+    result = subprocess.run(
+        ["sbatch"], input=rendered_slurm_script, text=True, capture_output=True
+    )
+    print("SLURM submission result:", result.stdout)

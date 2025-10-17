@@ -6,7 +6,7 @@ from mirroreval.call_hf_model import (
     download_dataset,
 )
 from mirroreval.config import settings
-from mirroreval.slurm_utilities import render_slurm_script
+from mirroreval.slurm_utilities import render_slurm_script, submit_slurm_job
 from mirroreval.creativity.creativity_metric import run_metric
 
 
@@ -25,11 +25,10 @@ def launch_creativity_evaluation():
     # Launch evaluation
     if settings.slurm_job.use_slurm is True:
         print("Submitting job to SLURM...")
-        rendered_slurm_script = render_slurm_script(script_name="creativity_metric.py")
-        print(rendered_slurm_script)
-        result = subprocess.run(
-            ["sbatch"], input=rendered_slurm_script, text=True, capture_output=True
+        rendered_slurm_script = render_slurm_script(
+            script_name="creativity/creativity_metric.py"
         )
-        print("SLURM submission result:", result.stdout)
+        print(rendered_slurm_script)
+        submit_slurm_job(rendered_slurm_script)
     else:
         run_metric()
