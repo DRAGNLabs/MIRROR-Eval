@@ -24,11 +24,14 @@ def run_metric():
 
                 print(input_text)
 
-                output_1 = call_hf_model(model_name, input_text)
+                output = call_hf_model(model_name, input_text)
 
-                print(f"Model: {model_name}, Output: {output_1}")
+                print(f"Model: {model_name}, Output: {output}")
 
-                break  # For testing, remove in actual run
+                # Save the output to a local file with a column for the model name and split name
+                with open(
+                        
+            
 
 
 if __name__ == "__main__":
