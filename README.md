@@ -111,6 +111,7 @@ mypy src/
 ## Other tips
 
 Set the HuggingFace cache on your machine:
+```bash
 export HF_HOME="/path/to/cache/dir"
 
 ## License
