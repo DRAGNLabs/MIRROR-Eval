@@ -18,27 +18,41 @@ def run_metric():
             print(f"Number of examples: {len(split_dataset)}")
             # Iterate through dataset
             for input_line in split_dataset:
-                input_text = get_prompt(
+                input = []
+
+                prompt = get_prompt(
                     "default",
                     set1=input_line["set1"],
                     set2=input_line["set2"],
                 )
 
-                print(input_text)
+                print(prompt)
 
-                output = pipeline(input_text, max_length=100, num_return_sequences=1)
+                input.append(
+                    [
+                        {
+                            "role": "system",
+                            "content": "You are a chat bot that answers directions",
+                        },
+                        {"role": "user", "content": prompt},
+                    ]
+                )
+
+                output = pipeline(input, max_length=200, num_return_sequences=1)
 
                 print(f"Model: {model_name}, Output: {output}")
 
                 record = {
                     "model_name": model_name,
                     "split_name": split_name,
-                    "input": input_text,
+                    "input": input,
                     "output": output,
                 }
 
                 with open("results.jsonl", "a", encoding="utf-8") as f:
                     f.write(json.dumps(record) + "\n")
+
+                break  # For testing, remove this to process all examples
 
 
 if __name__ == "__main__":

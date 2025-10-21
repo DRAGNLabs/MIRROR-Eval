@@ -1,11 +1,17 @@
 from transformers import pipeline
 from huggingface_hub import snapshot_download
 from datasets import load_dataset
+import torch
 
 
 def call_hf_model(model_name, input_text):
     """Call a Hugging Face model for text generation. Simple for single calls."""
-    pipe = pipeline("text-generation", model=model_name)
+    pipe = pipeline(
+        "text-generation",
+        model=model_name,
+        model_kwargs={"torch_dtype": torch.bfloat16},
+        device_map="auto",
+    )
     return pipe(input_text, max_length=50, num_return_sequences=1)
 
 

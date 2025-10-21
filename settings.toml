@@ -11,7 +11,8 @@ qos = "None"
 
 [creativity]
 models = [
-    "meta-llama/Meta-Llama-3.1-8B-Instruct",
-    "google/gemma-7b",
-    "Qwen/Qwen3-0.6B",
+    "meta-llama/Llama-3.3-70B-Instruct"
+    # "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    # "google/gemma-7b",
+    # "Qwen/Qwen3-0.6B",
 ]
