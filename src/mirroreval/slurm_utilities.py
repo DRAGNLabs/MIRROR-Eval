@@ -1,11 +1,12 @@
-import subprocess
-
-from jinja2 import Environment, BaseLoader
 import importlib.resources as pkg_resources
-from mirroreval import slurm_templates
-from .config import settings
-from importlib import resources
+import subprocess
 from pathlib import Path
+
+from jinja2 import BaseLoader, Environment
+
+from mirroreval import slurm_templates
+
+from .config import settings
 
 
 def render_slurm_script(script_name: str) -> str:
@@ -24,7 +25,7 @@ def render_slurm_script(script_name: str) -> str:
 
 
 def get_script_path(script_name: str) -> Path:
-    with resources.as_file(resources.files("mirroreval") / script_name) as path:
+    with pkg_resources.as_file(pkg_resources.files("mirroreval") / script_name) as path:
         return path
 
 

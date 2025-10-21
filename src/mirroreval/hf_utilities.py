@@ -1,7 +1,7 @@
-from transformers import pipeline
-from huggingface_hub import snapshot_download
-from datasets import load_dataset
 import torch
+from datasets import load_dataset
+from huggingface_hub import snapshot_download
+from transformers import pipeline
 
 
 def call_hf_model(model_name, input_text):
