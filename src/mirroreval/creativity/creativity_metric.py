@@ -38,7 +38,7 @@ def run_metric():
                     ]
                 )
 
-                output = pipeline(input, max_length=200, num_return_sequences=1)
+                output = pipeline(input, max_new_tokens=128, num_return_sequences=1)
 
                 print(f"Model: {model_name}, Output: {output}")
 
