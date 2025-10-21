@@ -17,7 +17,12 @@ def call_hf_model(model_name, input_text):
 
 def get_hf_pipeline(model_name, task="text-generation"):
     """Get a Hugging Face pipeline for a given model and task. Better for multiple calls."""
-    pipe = pipeline(task, model=model_name)
+    pipe = pipeline(
+        task,
+        model=model_name,
+        model_kwargs={"torch_dtype": torch.bfloat16},
+        device_map="auto",
+    )
     return pipe
 
 
