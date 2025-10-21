@@ -1,4 +1,4 @@
-from mirroreval.hf_utilities import call_hf_model, load_hf_dataset
+from mirroreval.hf_utilities import get_hf_pipeline, load_hf_dataset
 from mirroreval.creativity.prompts import get_prompt
 from mirroreval.config import settings, init_settings
 
@@ -12,6 +12,7 @@ def run_metric():
     models = settings.creativity.models
 
     for model_name in models:
+        pipeline = get_hf_pipeline(model_name)
         for split_name, split_dataset in dataset.items():
             print(f"--- Split: {split_name} ---")
             print(f"Number of examples: {len(split_dataset)}")
@@ -25,7 +26,7 @@ def run_metric():
 
                 print(input_text)
 
-                output = call_hf_model(model_name, input_text)
+                output = pipeline(input_text, max_length=100, num_return_sequences=1)
 
                 print(f"Model: {model_name}, Output: {output}")
 
