@@ -136,3 +136,6 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Ignore dynaconf secret files
+.secrets.*
