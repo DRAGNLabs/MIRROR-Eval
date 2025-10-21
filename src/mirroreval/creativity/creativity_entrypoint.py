@@ -21,7 +21,7 @@ def launch_creativity_evaluation():
     download_hf_dataset(dataset)
 
     # Launch evaluation
-    if settings.slurm_job.use_slurm is True:
+    if settings.slurm_job.use_slurm:
         print("Submitting job to SLURM...")
         rendered_slurm_script = render_slurm_script(
             script_name="creativity/creativity_metric.py"
