@@ -9,7 +9,7 @@ def call_hf_model(model_name, input_text):
     pipe = pipeline(
         "text-generation",
         model=model_name,
-        model_kwargs={"torch_dtype": torch.bfloat16},
+        model_kwargs={"dtype": torch.bfloat16},
         device_map="auto",
     )
     return pipe(input_text, max_length=50, num_return_sequences=1)
@@ -20,7 +20,7 @@ def get_hf_pipeline(model_name, task="text-generation"):
     pipe = pipeline(
         task,
         model=model_name,
-        model_kwargs={"torch_dtype": torch.bfloat16},
+        model_kwargs={"dtype": torch.bfloat16},
         device_map="auto",
     )
     return pipe
