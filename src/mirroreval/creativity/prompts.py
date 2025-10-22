@@ -29,6 +29,10 @@ PROMPTS = {
     Output:  Based on the above criteria, assign a separate score for quality and diversity to each set, ranging from 1 to 5 points.
 
     Example Output:  "Set 1": {Sentence Set 1} "Set 2": {Sentence Set 2} "Diversity_Score_Set1": {score}, "Diversity_Score_Set2": {score}
+
+    Here are the two sets of sentences to evaluate:
+    Set 1: {set1}
+    Set 2: {set2}
     """,
 }
 

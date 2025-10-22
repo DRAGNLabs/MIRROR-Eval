@@ -21,7 +21,7 @@ def run_metric():
                 input = []
 
                 prompt = get_prompt(
-                    "default",
+                    "detailed",
                     set1=input_line["set1"],
                     set2=input_line["set2"],
                 )
