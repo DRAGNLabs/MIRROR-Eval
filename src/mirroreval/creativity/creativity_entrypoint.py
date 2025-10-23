@@ -2,8 +2,11 @@ import subprocess
 
 from mirroreval.config import settings
 from mirroreval.creativity.creativity_metric import run_metric
-from mirroreval.hf_utilities import (download_hf_dataset, download_hf_model,
-                                     download_tokenizer)
+from mirroreval.hf_utilities import (
+    download_hf_dataset,
+    download_hf_model,
+    download_tokenizer,
+)
 from mirroreval.slurm_utilities import render_slurm_script, submit_slurm_job
 
 

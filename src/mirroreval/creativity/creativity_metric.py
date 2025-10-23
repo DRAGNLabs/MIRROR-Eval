@@ -2,7 +2,7 @@ import json
 import sys
 
 from mirroreval.config import init_settings, settings
-from mirroreval.creativity.prompts import get_prompt
+from mirroreval.creativity.prompts import get_prompt, get_prompt_names
 from mirroreval.hf_utilities import get_hf_pipeline, load_hf_dataset
 
 
@@ -11,6 +11,8 @@ def run_metric():
 
     models = settings.creativity.models
 
+    prompt_keys = get_prompt_names()
+
     for model_name in models:
         pipeline = get_hf_pipeline(model_name)
         for split_name, split_dataset in dataset.items():
@@ -18,39 +20,39 @@ def run_metric():
             print(f"Number of examples: {len(split_dataset)}")
             # Iterate through dataset
             for input_line in split_dataset:
-                input = []
+                for prompt in prompt_keys:
+                    input = []
 
-                prompt = get_prompt(
-                    "detailed",
-                    set1=input_line["set1"],
-                    set2=input_line["set2"],
-                )
+                    prompt = get_prompt(
+                        prompt,
+                        set1=input_line["set1"],
+                        set2=input_line["set2"],
+                    )
 
-                print(prompt)
+                    print(prompt)
 
-                input.append(
-                    [
-                        {
-                            "role": "system",
-                            "content": "You are a chat bot that answers directions",
-                        },
-                        {"role": "user", "content": prompt},
-                    ]
-                )
+                    input.append(
+                        [
+                            {
+                                "role": "system",
+                                "content": "You are a chat bot that answers directions",
+                            },
+                            {"role": "user", "content": prompt},
+                        ]
+                    )
 
-                output = pipeline(input, max_new_tokens=128, num_return_sequences=1)
+                    output = pipeline(input, max_new_tokens=128, num_return_sequences=1)
 
-                print(f"Model: {model_name}, Output: {output}")
+                    print(f"Model: {model_name}, Output: {output}")
 
-                record = {
-                    "model_name": model_name,
-                    "split_name": split_name,
-                    "input": input,
-                    "output": output,
-                }
+                    record = {
+                        "model_name": model_name,
+                        "split_name": split_name,
+                        "output": output,
+                    }
 
-                with open("results.jsonl", "a", encoding="utf-8") as f:
-                    f.write(json.dumps(record) + "\n")
+                    with open("results.jsonl", "a", encoding="utf-8") as f:
+                        f.write(json.dumps(record) + "\n")
 
                 break  # For testing, remove this to process all examples
 
