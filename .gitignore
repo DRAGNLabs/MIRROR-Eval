@@ -1,6 +1,6 @@
 # Project specific files
 data/
-
+.local/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
