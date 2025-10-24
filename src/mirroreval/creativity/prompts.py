@@ -1,3 +1,5 @@
+import copy
+
 PROMPTS = {
     "default": """
     Rate the diversity and quality of each of the next two sentences: {set1}, {set2}.
@@ -150,21 +152,51 @@ PROMPTS = {
     """,
 }
 
-SYSTEM_PROMPT_ROLES = {
-    "meta-llama/Llama-3.3-70B-Instruct": "system",
-    "meta-llama/Meta-Llama-3.1-8B-Instruct": "system",
-    "google/gemma-7b-it": "assistant",
-    "Qwen/Qwen3-30B-A3B-Instruct-2507": "system",
+
+SYSTEM_PROMPTS = {
+    "meta-llama/Llama-3.3-70B-Instruct": [
+        {
+            "role": "system",
+            "content": "You are a chat bot that answers directions",
+        },
+        {"role": "user", "content": "{prompt}"},
+    ],
+    "meta-llama/Meta-Llama-3.1-8B-Instruct": [
+        {
+            "role": "system",
+            "content": "You are a chat bot that answers directions",
+        },
+        {"role": "user", "content": "{prompt}"},
+    ],
+    "google/gemma-7b-it": [
+        {
+            "role": "user",
+            "content": "You are a chat bot that answers directions + {prompt}",
+        },
+    ],
+    "Qwen/Qwen3-30B-A3B-Instruct-2507": [
+        {
+            "role": "system",
+            "content": "You are a chat bot that answers directions",
+        },
+        {"role": "user", "content": "{prompt}"},
+    ],
 }
 
 
-def get_prompt(name, **kwargs):
-    return PROMPTS[name].format(**kwargs)
+def get_prompt(prompt_name, **kwargs):
+    return PROMPTS[prompt_name].format(**kwargs)
 
 
 def get_prompt_names():
     return PROMPTS.keys()
 
 
-def get_system_prompt_role(model_name):
-    return SYSTEM_PROMPT_ROLES.get(model_name, "system")
+def get_formatted_prompt(model_name, prompt_name, set1, set2):
+    # Deep copy to avoid mutating the original
+    prompt_template = copy.deepcopy(SYSTEM_PROMPTS[model_name])
+    actual_prompt = get_prompt(prompt_name=prompt_name, set1=set1, set2=set2)
+    for message in prompt_template:
+        if message["role"] == "user":
+            message["content"] = message["content"].format(prompt=actual_prompt)
+    return prompt_template

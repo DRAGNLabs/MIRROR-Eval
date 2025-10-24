@@ -2,11 +2,7 @@ import json
 import sys
 
 from mirroreval.config import init_settings, settings
-from mirroreval.creativity.prompts import (
-    get_prompt,
-    get_prompt_names,
-    get_system_prompt_role,
-)
+from mirroreval.creativity.prompts import get_prompt_names, get_formatted_prompt
 from mirroreval.hf_utilities import get_hf_pipeline, load_hf_dataset
 
 
@@ -25,29 +21,18 @@ def run_metric():
             # Iterate through dataset
             for input_line in split_dataset:
                 for prompt in prompt_keys:
-                    input = []
-
-                    prompt = get_prompt(
+                    formatted_prompt = get_formatted_prompt(
+                        model_name,
                         prompt,
                         set1=input_line["set1"],
                         set2=input_line["set2"],
                     )
 
-                    print(prompt)
+                    print(formatted_prompt)
 
-                    system_prompt_role = get_system_prompt_role(model_name)
-
-                    input.append(
-                        [
-                            {
-                                "role": system_prompt_role,
-                                "content": "You are a chat bot that answers directions",
-                            },
-                            {"role": "user", "content": prompt},
-                        ]
+                    output = pipeline(
+                        formatted_prompt, max_new_tokens=128, num_return_sequences=1
                     )
-
-                    output = pipeline(input, max_new_tokens=128, num_return_sequences=1)
 
                     print(f"Model: {model_name}, Output: {output}")
 
