@@ -150,6 +150,13 @@ PROMPTS = {
     """,
 }
 
+SYSTEM_PROMPT_ROLES = {
+    "meta-llama/Llama-3.3-70B-Instruct": "system",
+    "meta-llama/Meta-Llama-3.1-8B-Instruct": "system",
+    "google/gemma-7b-it": "assistant",
+    "Qwen/Qwen3-30B-A3B-Instruct-2507": "system",
+}
+
 
 def get_prompt(name, **kwargs):
     return PROMPTS[name].format(**kwargs)
@@ -157,3 +164,7 @@ def get_prompt(name, **kwargs):
 
 def get_prompt_names():
     return PROMPTS.keys()
+
+
+def get_system_prompt_role(model_name):
+    return SYSTEM_PROMPT_ROLES.get(model_name, "system")

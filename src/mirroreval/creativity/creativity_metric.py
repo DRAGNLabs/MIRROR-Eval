@@ -2,7 +2,11 @@ import json
 import sys
 
 from mirroreval.config import init_settings, settings
-from mirroreval.creativity.prompts import get_prompt, get_prompt_names
+from mirroreval.creativity.prompts import (
+    get_prompt,
+    get_prompt_names,
+    get_system_prompt_role,
+)
 from mirroreval.hf_utilities import get_hf_pipeline, load_hf_dataset
 
 
@@ -31,10 +35,12 @@ def run_metric():
 
                     print(prompt)
 
+                    system_prompt_role = get_system_prompt_role(model_name)
+
                     input.append(
                         [
                             {
-                                "role": "system",
+                                "role": system_prompt_role,
                                 "content": "You are a chat bot that answers directions",
                             },
                             {"role": "user", "content": prompt},
