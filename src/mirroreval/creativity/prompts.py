@@ -329,7 +329,7 @@ def get_formatted_prompt(model_name, prompt_name, prompt_type, **kwargs):
     # Deep copy to avoid mutating the original
     prompt_template = copy.deepcopy(SYSTEM_PROMPTS[model_name])
     actual_prompt = get_prompt(
-        prompt_name=prompt_name, prompt_type=prompt_type, kwargs=kwargs
+        prompt_name=prompt_name, prompt_type=prompt_type, **kwargs
     )
     for message in prompt_template:
         if message["role"] == "user":
