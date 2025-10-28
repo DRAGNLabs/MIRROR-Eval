@@ -1,11 +1,9 @@
 import argparse
 from pathlib import Path
 
-from mirroreval.creativity.creativity_entrypoint import \
-    launch_creativity_evaluation
+from mirroreval.creativity.creativity_entrypoint import launch_creativity_evaluation
 
 from .config import init_settings, settings
-from .slurm_utilities import render_slurm_script
 
 
 def evaluate(settings_file_path):

@@ -1,5 +1,6 @@
 import json
 import sys
+from collections import defaultdict
 
 from mirroreval.config import init_settings, settings
 from mirroreval.creativity.prompts import (
@@ -7,6 +8,15 @@ from mirroreval.creativity.prompts import (
     get_formatted_prompt,
 )
 from mirroreval.hf_utilities import get_hf_pipeline, load_hf_dataset
+
+
+def chunked(iterable, n):
+    """Yield successive n-sized chunks from iterable."""
+    for i in range(0, len(iterable), n):
+        yield iterable[i : i + n]
+
+
+BATCH_SIZE = 32  # Adjust based on your model/GPU
 
 
 def run_metric():
@@ -21,6 +31,8 @@ def run_metric():
         for split_name, split_dataset in dataset.items():
             print(f"--- Split: {split_name} ---")
             print(f"Number of examples: {len(split_dataset)}")
+            prompts = []
+            meta = []
             # Iterate through dataset
             for input_line in split_dataset:
                 set1 = input_line["set1"]
@@ -35,11 +47,14 @@ def run_metric():
                         set2=set2,
                     )
 
-                    output_both_sets = pipeline(
-                        formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    )
+                    prompts.append(formatted_prompt)
+                    meta.append((input_line, prompt_name, "both"))
 
-                    print(f"Model: {model_name}, both sets, Output: {output_both_sets}")
+                    # output_both_sets = pipeline(
+                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
+                    # )
+
+                    # print(f"Model: {model_name}, both sets, Output: {output_both_sets}")
 
                     ### Generate only with set 1
                     formatted_prompt = get_formatted_prompt(
@@ -49,11 +64,14 @@ def run_metric():
                         set1=set1,
                     )
 
-                    output_set_1 = pipeline(
-                        formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    )
+                    prompts.append(formatted_prompt)
+                    meta.append((input_line, prompt_name, "set1"))
 
-                    print(f"Model: {model_name}, only set1, Output: {output_set_1}")
+                    # output_set_1 = pipeline(
+                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
+                    # )
+
+                    # print(f"Model: {model_name}, only set1, Output: {output_set_1}")
 
                     ### Generate only with set 2
 
@@ -64,38 +82,80 @@ def run_metric():
                         set2=set2,
                     )
 
-                    output_set_2 = pipeline(
-                        formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    )
+                    prompts.append(formatted_prompt)
+                    meta.append((input_line, prompt_name, "set2"))
 
-                    print(f"Model: {model_name}, only set2, Output: {output_set_2}")
+                    # output_set_2 = pipeline(
+                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
+                    # )
+
+                    # print(f"Model: {model_name}, only set2, Output: {output_set_2}")
 
                     ### Save results
 
-                    record = {
-                        "model_name": model_name,
-                        "split_name": split_name,
-                        "output_both_sets": output_both_sets,
-                        "output_set_1": output_set_1,
-                        "output_set_2": output_set_2,
-                        "prompt": prompt_name,
-                        "src": input_line["src"],
-                        "set1": input_line["set1"],
-                        "set2": input_line["set2"],
-                        "set1_label": input_line["set1_label"],
-                        "set2_label": input_line["set2_label"],
-                        "Quality_Set1": input_line["Quality_Set1"],
-                        "Quality_Set2": input_line["Quality_Set2"],
-                        "Diversity_Set1": input_line["Diversity_Set1"],
-                        "Diversity_Set2": input_line["Diversity_Set2"],
-                        "llm_quality": input_line["llm_quality"],
-                        "llm_diversity": input_line["llm_diversity"],
-                    }
-
-                    with open("results.jsonl", "a", encoding="utf-8") as f:
-                        f.write(json.dumps(record) + "\n")
-
                 break  # For testing, remove this to process all examples
+
+            # Process in batches
+            all_outputs = []
+            for prompt_chunk in chunked(prompts, BATCH_SIZE):
+                outputs = pipeline(
+                    prompt_chunk, max_new_tokens=64, num_return_sequences=1
+                )[0]["generated_text"][-1]
+                all_outputs.extend(outputs)
+
+            # Group outputs by input_line and prompt_name
+            grouped = defaultdict(dict)
+            for (input_line, prompt_name, which), output in zip(meta, all_outputs):
+                key = (input_line["src"], prompt_name)
+                grouped[key][which] = output
+
+            # Save results
+            for (src, prompt_name), outdict in grouped.items():
+                input_line = next(x for x in split_dataset if x["src"] == src)
+                record = {
+                    "model_name": model_name,
+                    "split_name": split_name,
+                    "output_both_sets": outdict.get("both", ""),
+                    "output_set_1": outdict.get("set1", ""),
+                    "output_set_2": outdict.get("set2", ""),
+                    "prompt": prompt_name,
+                    "src": input_line["src"],
+                    "set1": input_line["set1"],
+                    "set2": input_line["set2"],
+                    "set1_label": input_line["set1_label"],
+                    "set2_label": input_line["set2_label"],
+                    "Quality_Set1": input_line["Quality_Set1"],
+                    "Quality_Set2": input_line["Quality_Set2"],
+                    "Diversity_Set1": input_line["Diversity_Set1"],
+                    "Diversity_Set2": input_line["Diversity_Set2"],
+                    "llm_quality": input_line["llm_quality"],
+                    "llm_diversity": input_line["llm_diversity"],
+                }
+                with open("results.jsonl", "a", encoding="utf-8") as f:
+                    f.write(json.dumps(record) + "\n")
+
+            # record = {
+            #     "model_name": model_name,
+            #     "split_name": split_name,
+            #     "output_both_sets": output_both_sets[0]["generated_text"][-1],
+            #     "output_set_1": output_set_1[0]["generated_text"][-1],
+            #     "output_set_2": output_set_2[0]["generated_text"][-1],
+            #     "prompt": prompt_name,
+            #     "src": input_line["src"],
+            #     "set1": input_line["set1"],
+            #     "set2": input_line["set2"],
+            #     "set1_label": input_line["set1_label"],
+            #     "set2_label": input_line["set2_label"],
+            #     "Quality_Set1": input_line["Quality_Set1"],
+            #     "Quality_Set2": input_line["Quality_Set2"],
+            #     "Diversity_Set1": input_line["Diversity_Set1"],
+            #     "Diversity_Set2": input_line["Diversity_Set2"],
+            #     "llm_quality": input_line["llm_quality"],
+            #     "llm_diversity": input_line["llm_diversity"],
+            # }
+
+            # with open("results.jsonl", "a", encoding="utf-8") as f:
+            #     f.write(json.dumps(record) + "\n")
 
 
 if __name__ == "__main__":
