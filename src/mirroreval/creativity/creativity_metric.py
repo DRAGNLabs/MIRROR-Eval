@@ -50,12 +50,6 @@ def run_metric():
                     prompts.append(formatted_prompt)
                     meta.append((input_line, prompt_name, "both"))
 
-                    # output_both_sets = pipeline(
-                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    # )
-
-                    # print(f"Model: {model_name}, both sets, Output: {output_both_sets}")
-
                     ### Generate only with set 1
                     formatted_prompt = get_formatted_prompt(
                         model_name=model_name,
@@ -67,14 +61,7 @@ def run_metric():
                     prompts.append(formatted_prompt)
                     meta.append((input_line, prompt_name, "set1"))
 
-                    # output_set_1 = pipeline(
-                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    # )
-
-                    # print(f"Model: {model_name}, only set1, Output: {output_set_1}")
-
                     ### Generate only with set 2
-
                     formatted_prompt = get_formatted_prompt(
                         model_name=model_name,
                         prompt_name=prompt_name,
@@ -85,14 +72,6 @@ def run_metric():
                     prompts.append(formatted_prompt)
                     meta.append((input_line, prompt_name, "set2"))
 
-                    # output_set_2 = pipeline(
-                    #     formatted_prompt, max_new_tokens=64, num_return_sequences=1
-                    # )
-
-                    # print(f"Model: {model_name}, only set2, Output: {output_set_2}")
-
-                    ### Save results
-
                 break  # For testing, remove this to process all examples
 
             # Process in batches
@@ -100,8 +79,9 @@ def run_metric():
             for prompt_chunk in chunked(prompts, BATCH_SIZE):
                 outputs = pipeline(
                     prompt_chunk, max_new_tokens=64, num_return_sequences=1
-                )[0]["generated_text"][-1]
-                all_outputs.extend(outputs)
+                )
+                for out in outputs:
+                    all_outputs.append(out[0]["generated_text"][-1]["content"])
 
             # Group outputs by input_line and prompt_name
             grouped = defaultdict(dict)
@@ -133,29 +113,6 @@ def run_metric():
                 }
                 with open("results.jsonl", "a", encoding="utf-8") as f:
                     f.write(json.dumps(record) + "\n")
-
-            # record = {
-            #     "model_name": model_name,
-            #     "split_name": split_name,
-            #     "output_both_sets": output_both_sets[0]["generated_text"][-1],
-            #     "output_set_1": output_set_1[0]["generated_text"][-1],
-            #     "output_set_2": output_set_2[0]["generated_text"][-1],
-            #     "prompt": prompt_name,
-            #     "src": input_line["src"],
-            #     "set1": input_line["set1"],
-            #     "set2": input_line["set2"],
-            #     "set1_label": input_line["set1_label"],
-            #     "set2_label": input_line["set2_label"],
-            #     "Quality_Set1": input_line["Quality_Set1"],
-            #     "Quality_Set2": input_line["Quality_Set2"],
-            #     "Diversity_Set1": input_line["Diversity_Set1"],
-            #     "Diversity_Set2": input_line["Diversity_Set2"],
-            #     "llm_quality": input_line["llm_quality"],
-            #     "llm_diversity": input_line["llm_diversity"],
-            # }
-
-            # with open("results.jsonl", "a", encoding="utf-8") as f:
-            #     f.write(json.dumps(record) + "\n")
 
 
 if __name__ == "__main__":

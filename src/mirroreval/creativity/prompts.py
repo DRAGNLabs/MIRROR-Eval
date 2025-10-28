@@ -305,6 +305,13 @@ SYSTEM_PROMPTS = {
         },
         {"role": "user", "content": "{prompt}"},
     ],
+    "Qwen/Qwen1.5-0.5B-Chat": [
+        {
+            "role": "system",
+            "content": "You are a chat bot that answers directions",
+        },
+        {"role": "user", "content": "{prompt}"},
+    ],
 }
 
 
