@@ -68,7 +68,7 @@ class GCRDiversityDataset(DatasetInterface):
                 yield example
 
 
-@register_dataset("royal42/gcr-diversity")
+@register_dataset("royal42/gcr-diversity-demo")
 class GCRDiversityDemoDataset(DatasetInterface):
     def __init__(self):
         self.dataset = None
