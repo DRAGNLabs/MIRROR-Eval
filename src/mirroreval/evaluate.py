@@ -1,9 +1,23 @@
-import argparse
 from pathlib import Path
+from enum import Enum
 
-from mirroreval.creativity.creativity_entrypoint import launch_creativity_evaluation
+from mirroreval.creativity_development.creativity_entrypoint import (
+    launch_creativity_evaluation,
+)
 
 from .config import init_settings, settings
+from .logger import logger
+
+
+class Benchmarks(str, Enum):
+    CREATIVITY = "creativity"
+    # Future benchmarks can be added here
+
+
+BENCHMARK_SCRIPTS = {
+    Benchmarks.CREATIVITY: launch_creativity_evaluation,
+    # Future benchmarks can be mapped here
+}
 
 
 def evaluate(settings_file_path):
@@ -29,14 +43,20 @@ def evaluate(settings_file_path):
         This is a placeholder implementation. The full evaluation pipeline
         will be implemented in future versions.
     """
-    print("MIRROR-Eval: Evaluation pipeline starting...")
+    logger.info("MIRROR-Eval: Initializing settings...")
 
     # Get the absolute path of the config file
     settings_file_path = Path(settings_file_path).resolve()
 
     init_settings(settings_file_path)
 
-    print(settings.as_dict())
-
-    # Run creativity evaluation
-    launch_creativity_evaluation()
+    # Iterate through benchmarks specified in settings
+    for benchmark_name in settings.benchmarks.benchmarks:
+        if benchmark_name not in BENCHMARK_SCRIPTS:
+            logger.error(
+                f"Warning: Unknown benchmark '{benchmark_name}' specified in settings."
+            )
+            continue
+        benchmark = Benchmarks(benchmark_name)
+        logger.info(f"Running benchmark: {benchmark.value}")
+        BENCHMARK_SCRIPTS[benchmark]()

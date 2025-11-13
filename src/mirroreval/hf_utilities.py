@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset
 from huggingface_hub import snapshot_download
-from transformers import pipeline
+from transformers import pipeline, AutoModel, AutoTokenizer
 
 
 def call_hf_model(model_name, input_text):
@@ -44,3 +44,13 @@ def download_hf_dataset(dataset_name):
 def load_hf_dataset(dataset_name):
     dataset = load_dataset(dataset_name)
     return dataset
+
+
+def get_hf_model(model_name):
+    model = AutoModel.from_pretrained(model_name)
+    return model
+
+
+def get_hf_tokenizer(tokenizer_name):
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    return tokenizer
