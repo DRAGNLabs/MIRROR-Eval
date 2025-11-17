@@ -292,12 +292,6 @@ SYSTEM_PROMPTS = {
         },
         {"role": "user", "content": "{prompt}"},
     ],
-    "google/gemma-7b-it": [
-        {
-            "role": "user",
-            "content": "You are a chat bot that answers directions. {prompt}",
-        },
-    ],
     "Qwen/Qwen3-30B-A3B-Instruct-2507": [
         {
             "role": "system",
