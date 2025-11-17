@@ -22,6 +22,10 @@ def launch_creativity_evaluation():
         download_tokenizer(model)
 
     for dataset in settings.creativity.datasets:
+        # If the dataset ends with "demo", skip downloading
+        if dataset.endswith("demo"):
+            logger.info(f"Skipping download for demo dataset: {dataset}")
+            continue
         download_hf_dataset(dataset)
 
     # Launch evaluation
