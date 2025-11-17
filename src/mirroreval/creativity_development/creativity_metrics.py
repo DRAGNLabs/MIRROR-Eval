@@ -10,10 +10,11 @@ from mirroreval.creativity_development.prompts import (
     get_formatted_prompt,
 )
 from mirroreval.hf_utilities import get_hf_pipeline, get_hf_model, get_hf_tokenizer
+from mirroreval.logger import logger
 
-BATCH_SIZE = 1  # Adjust based on your model/GPU
+BATCH_SIZE = 128  # Adjust based on your model/GPU
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 METRICS: Dict[str, Type["MetricInterface"]] = {}
 
@@ -66,6 +67,7 @@ class LLMAsAJudge(MetricInterface):
 
             sample_chunk = []
             for index, input_line in enumerate(dataset):
+                logger.info(f"Processing input line {index} with model {model_name}")
                 set1, set2 = (
                     input_line["set1"],
                     input_line["set2"],
@@ -146,6 +148,7 @@ class SelfAvgCosine(MetricInterface):
         # CREDIT: github.com/LivNLP/Evaluating-Diversity-Metrics
 
         for index, input_line in enumerate(dataset):
+            logger.info(f"Processing input line {index} with SelfAvgCosine metric")
             set1, set2 = input_line["set1"], input_line["set2"]
             set1_score = self.metric(set1)
             set2_score = self.metric(set2)
@@ -207,6 +210,7 @@ class Chamfer(MetricInterface):
     def __call__(self, dataset):
         # CREDIT: github.com/LivNLP/Evaluating-Diversity-Metrics
         for index, input_line in enumerate(dataset):
+            logger.info(f"Processing input line {index} with Chamfer metric")
             set1, set2 = input_line["set1"], input_line["set2"]
             set1_score = self.metric(set1)
             set2_score = self.metric(set2)
