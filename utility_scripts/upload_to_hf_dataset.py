@@ -1,3 +1,7 @@
+"""
+Process and upload gcr-diversity dataset to Hugging Face Hub.
+"""
+
 import json
 import os
 from datasets import Dataset, DatasetDict, load_dataset, Features, Value, Sequence

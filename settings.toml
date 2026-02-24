@@ -1,3 +1,10 @@
+# General settings for benchmarks
+[benchmarks]
+# benchmarks: which benchmarks to run, by name
+benchmarks = [
+    "creativity"
+]
+
 [slurm_job]
 use_slurm = true
 job_name = "test_job"
@@ -10,9 +17,17 @@ conda_env = "mirror-eval"
 qos = ""
 
 [creativity]
-models = [
-    "meta-llama/Llama-3.3-70B-Instruct"
-    # "meta-llama/Meta-Llama-3.1-8B-Instruct",
-    # "google/gemma-7b",
-    # "Qwen/Qwen3-0.6B",
+metrics = [
+    "llm-as-a-judge"
 ]
+datasets = [
+    "gcr-diversity",
+    "mt-eval"
+]
+models = [
+    "meta-llama/Llama-3.3-70B-Instruct",
+    "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "google/gemma-7b-it",
+    "Qwen/Qwen3-30B-A3B-Instruct-2507"
+]
+output_dir = ""
