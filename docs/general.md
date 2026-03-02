@@ -1,5 +1,7 @@
 # General
 
+TODO: gotta change this, this is an outdated model of how this should run
+
 MIRROR-Eval is a benchmark pipeline for running a single model across multiple tasks.
 
 The pipeline follow a specific composition: it iterates through a list
