@@ -3,6 +3,8 @@ from datasets import load_dataset
 from huggingface_hub import snapshot_download
 from transformers import pipeline, AutoModel, AutoTokenizer
 
+from mirroreval.logger import logger
+
 
 def call_hf_model(model_name, input_text):
     """Call a Hugging Face model for text generation. Simple for single calls."""
@@ -26,19 +28,10 @@ def get_hf_pipeline(model_name, task="text-generation"):
     return pipe
 
 
-def download_hf_model(model_name):
-    cache_path = snapshot_download(repo_id=model_name)
-    print(f"Model downloaded to {cache_path}")
-
-
-def download_tokenizer(tokenizer_name):
-    cache_path = snapshot_download(repo_id=tokenizer_name)
-    print(f"Tokenizer downloaded to {cache_path}")
-
-
-def download_hf_dataset(dataset_name):
-    dataset = load_hf_dataset(dataset_name)
-    print(f"Dataset {dataset_name} loaded with {len(dataset)} splits.")
+def download_from_hf(repo_id):
+    """Download a model, tokenizer, or other artifact from HuggingFace Hub."""
+    cache_path = snapshot_download(repo_id=repo_id)
+    logger.info(f"Downloaded {repo_id} to {cache_path}")
 
 
 def load_hf_dataset(dataset_name):

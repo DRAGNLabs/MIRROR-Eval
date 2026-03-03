@@ -2,7 +2,7 @@
 
 MIRROR-Eval is an evaluation framework for MIRROR models.
 
-## Installation
+## Installation for development
 
 **Using conda:**
 
@@ -43,7 +43,7 @@ This will create distribution files in the `dist/` directory:
 ### Installing the built package
 
 ```bash
-pip install dist/mirror_eval-0.1.0-py3-none-any.whl
+pip install dist/mirroreval-0.1.0-py3-none-any.whl
 ```
 
 ## Usage
@@ -51,12 +51,15 @@ pip install dist/mirror_eval-0.1.0-py3-none-any.whl
 The primary entrypoint for MIRROR-Eval is the `evaluate` function:
 
 ```python
-from mirror_eval import evaluate
+from mirroreval import evaluate
 
 # Run the evaluation pipeline
-results = evaluate()
-print(results)
+evaluate("settings.toml")
 ```
+
+## Demo
+
+To test it out, try running [demo.py](demo.py)
 
 ## Development
 
@@ -65,13 +68,27 @@ print(results)
 ```
 MIRROR-Eval/
 ├── src/
-│   └── mirror_eval/
+│   └── mirroreval/
 │       ├── __init__.py
-│       └── evaluate.py
+│       ├── evaluate.py
+│       ├── config.py
+│       ├── logger.py
+│       ├── hf_utilities.py
+│       ├── slurm_utilities.py
+│       ├── slurm_templates/
+│       └── benchmarks/
+│           └── creativity/
+│               ├── creativity_entrypoint.py
+│               ├── creativity_benchmark.py
+│               ├── creativity_metrics.py
+│               ├── creativity_datasets.py
+│               ├── creativity_analysis.py
+│               └── prompts.py
 ├── tests/
+├── notebooks/
 ├── pyproject.toml
 ├── environment.yml
-├── requirements-dev.txt
+├── settings.toml
 ├── README.md
 └── LICENSE
 ```
@@ -85,7 +102,7 @@ pytest
 With coverage:
 
 ```bash
-pytest --cov=mirror_eval --cov-report=html
+pytest --cov=mirroreval --cov-report=html
 ```
 
 ### Code Formatting

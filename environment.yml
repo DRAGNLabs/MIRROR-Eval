@@ -3,18 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.8
+  - python>=3.10
   - pip
-  - datasets
-  - dynaconf
-  - jinja2
-  - huggingface-hub
-  - transformers
-  - numpy
-  - torch
-  - pytest
-  - black
-  - flake8
   - pip:
-    - -e .
-    - torch==2.8.0+cu129
+    - -e ".[dev]"

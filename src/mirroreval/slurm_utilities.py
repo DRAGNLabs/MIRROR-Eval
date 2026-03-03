@@ -7,6 +7,7 @@ from jinja2 import BaseLoader, Environment
 from mirroreval import slurm_templates
 
 from .config import settings
+from .logger import logger
 
 
 def render_slurm_script(script_name: str) -> str:
@@ -17,7 +18,7 @@ def render_slurm_script(script_name: str) -> str:
     context = settings.slurm_job.to_dict()
     context["script"] = get_script_path(script_name)
 
-    print("SLURM context:", context)
+    logger.info(f"SLURM context: {context}")
 
     rendered_script = template.render(context)
 
@@ -33,6 +34,6 @@ def submit_slurm_job(rendered_slurm_script: str) -> None:
     result = subprocess.run(
         ["sbatch"], input=rendered_slurm_script, text=True, capture_output=True
     )
-    print("SLURM submission result:", result.stdout)
+    logger.info(f"SLURM submission result: {result.stdout}")
     if result.returncode != 0:
-        print("SLURM submission error:", result.stderr)
+        logger.error(f"SLURM submission error: {result.stderr}")

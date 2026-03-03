@@ -1,7 +1,6 @@
 from pathlib import Path
-from enum import Enum
 
-from mirroreval.creativity_development.creativity_entrypoint import (
+from mirroreval.benchmarks.creativity.creativity_entrypoint import (
     launch_creativity_evaluation,
 )
 
@@ -9,14 +8,8 @@ from .config import init_settings, settings
 from .logger import logger
 
 
-class Benchmarks(str, Enum):
-    CREATIVITY = "creativity"
-    # Future benchmarks can be added here
-
-
-BENCHMARK_SCRIPTS = {
-    Benchmarks.CREATIVITY: launch_creativity_evaluation,
-    # Future benchmarks can be mapped here
+BENCHMARKS = {
+    "creativity": launch_creativity_evaluation,
 }
 
 
@@ -24,24 +17,12 @@ def evaluate(settings_file_path):
     """
     Run the MIRROR evaluation pipeline.
 
-    This is the primary entrypoint for the MIRROR-Eval package. It will
-    orchestrate the evaluation pipeline for MIRROR models.
-
     Args:
-        *args: Positional arguments for the evaluation pipeline.
-        **kwargs: Keyword arguments for the evaluation pipeline.
-
-    Returns:
-        dict: Evaluation results containing metrics and outputs.
+        settings_file_path: Path to a TOML settings file.
 
     Examples:
-        >>> from mirror_eval import evaluate
-        >>> results = evaluate()
-        >>> print(results)
-
-    Note:
-        This is a placeholder implementation. The full evaluation pipeline
-        will be implemented in future versions.
+        >>> from mirroreval import evaluate
+        >>> evaluate("settings.toml")
     """
     logger.info("MIRROR-Eval: Initializing settings...")
 
@@ -51,12 +32,11 @@ def evaluate(settings_file_path):
     init_settings(settings_file_path)
 
     # Iterate through benchmarks specified in settings
-    for benchmark_name in settings.benchmarks.benchmarks:
-        if benchmark_name not in BENCHMARK_SCRIPTS:
+    for name in settings.benchmarks.benchmarks:
+        if name not in BENCHMARKS:
             logger.error(
-                f"Warning: Unknown benchmark '{benchmark_name}' specified in settings."
+                f"Unknown benchmark '{name}' specified in settings."
             )
             continue
-        benchmark = Benchmarks(benchmark_name)
-        logger.info(f"Running benchmark: {benchmark.value}")
-        BENCHMARK_SCRIPTS[benchmark]()
+        logger.info(f"Running benchmark: {name}")
+        BENCHMARKS[name]()
