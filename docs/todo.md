@@ -27,3 +27,9 @@ for each benchmark in config benchmarks:
     OUT: each benchmark should return a data structure representing scores. It doesn't have to be a single score, could have confidence intervals, multiple scores, etc.
     
 
+TODO:
+
+adapt the creativity benchmark into generalized accuracy, using a single dataset with basic LLM-as-a-judge and cos sim
+create contribution instrucitons from this. 
+A contribution needs ot have input/output documentation, general documentation, details on requirements,
+A contribution should add a doc outlining these specific things/requirements.
