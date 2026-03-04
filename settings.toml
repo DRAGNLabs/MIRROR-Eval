@@ -1,12 +1,15 @@
+[model]
+model_checkpoint_path = "Qwen/Qwen3-0.6B"
+
 # General settings for benchmarks
 [benchmarks]
 # benchmarks: which benchmarks to run, by name
 benchmarks = [
-    "creativity"
+    "mta"
 ]
 
 [slurm_job]
-use_slurm = true
+use_slurm = false
 job_name = "test_job"
 time = "01:00:00"
 ntasks = 1
@@ -32,3 +35,15 @@ llm_judge_models = [
 ]
 other_models = []
 output_dir = ""
+
+[mta]
+metrics = [
+    "llm-as-a-judge"
+]
+datasets = [
+    "royal42/mta-test"
+]
+llm_judge_model = "Qwen/Qwen3-0.6B"
+judge_prompt_name = "category"
+output_dir = ""
+

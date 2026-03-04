@@ -3,13 +3,14 @@ from pathlib import Path
 from mirroreval.benchmarks.creativity.creativity_entrypoint import (
     launch_creativity_evaluation,
 )
+from mirroreval.benchmarks.mta.mta_entrypoint import launch_mta_evaluation
 
 from .config import init_settings, settings
 from .logger import logger
 
-
 BENCHMARKS = {
     "creativity": launch_creativity_evaluation,
+    "mta": launch_mta_evaluation,
 }
 
 
@@ -34,9 +35,7 @@ def evaluate(settings_file_path):
     # Iterate through benchmarks specified in settings
     for name in settings.benchmarks.benchmarks:
         if name not in BENCHMARKS:
-            logger.error(
-                f"Unknown benchmark '{name}' specified in settings."
-            )
+            logger.error(f"Unknown benchmark '{name}' specified in settings.")
             continue
         logger.info(f"Running benchmark: {name}")
         BENCHMARKS[name]()

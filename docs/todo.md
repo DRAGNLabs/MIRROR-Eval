@@ -1,9 +1,5 @@
 notes:
 
-Need three ways to run this thing:
-1. Just plan run on a local gpu/hardware
-2. Through slurm, meaning a slurm process is launched. to run a model on a benchmark
-3. on an existing running slurm process..this would be the same as 1?
 
 
 A major challenge ends up being efficiency: this pipeline is basically a bunch of nested loops. Picking the right loop order is critical:
@@ -33,3 +29,16 @@ adapt the creativity benchmark into generalized accuracy, using a single dataset
 create contribution instrucitons from this. 
 A contribution needs ot have input/output documentation, general documentation, details on requirements,
 A contribution should add a doc outlining these specific things/requirements.
+
+
+develop a standardized output json class to inherit from.
+set this as the output of the primary benchmark class.
+
+
+Figure out how to pass a model to the benchmark:
+let's start by use case: youre local or on a login node and you call evaluate which either triggers jobs or just does the benchmarks in order. So the settings should have a checkpoint path. Loading the model is up to the individual benchmarks.
+should each benchmark load and run the model from checkpoint seperately?
+Need three ways to run this thing:
+1. Just plan run on a local gpu/hardware 
+2. Through slurm, meaning a slurm process is launched. to run a model on a benchmark
+3. on an existing running slurm process..this would be the same as 1?

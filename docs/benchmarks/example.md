@@ -1,4 +1,4 @@
-# Multiturn Accuracy (MTA)
+# Benchmark Name
 
 ## About
 
@@ -7,8 +7,6 @@ Describe this benchmark
 ## Requirements
 
 Describe any requirements such as packages, data, etc.
-
-MTA requires accelerate and HF hub access. MTA downloads the royal42/mta-test dataset for evaluation.
 
 ## Inputs
 
