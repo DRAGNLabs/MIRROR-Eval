@@ -33,7 +33,7 @@ def simulate_conversation(dataset, output_file):
         for user_msg in user_turns:
             conversation.append({"role": "user", "content": user_msg})
 
-            output = pipe(conversation, max_new_tokens=256)
+            output = pipe(conversation, max_new_tokens=256, max_length=None)
             assistant_msg = output[0]["generated_text"][-1]["content"]
 
             conversation.append({"role": "assistant", "content": assistant_msg})

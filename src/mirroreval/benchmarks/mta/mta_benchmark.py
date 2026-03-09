@@ -67,6 +67,8 @@ def run_benchmark():
         # 6. Perform final analysis on all metric scores, corpus level stuff.
         final_scores = compute_scores(model_responses_file, output_file)
 
+        logger.info(f"Final scores: {final_scores}")
+
         return final_scores
     else:
         logger.info(

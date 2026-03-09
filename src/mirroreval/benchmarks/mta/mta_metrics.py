@@ -50,7 +50,7 @@ class LLMAsAJudge(MetricInterface):
 
         def flush_chunk(chunk, out_f):
             prompt_chunk = [sample[2] for sample in chunk]
-            outputs = pipeline(prompt_chunk, max_new_tokens=64, num_return_sequences=1)
+            outputs = pipeline(prompt_chunk, max_new_tokens=256, max_length=None, num_return_sequences=1)
             outputs = [output[0]["generated_text"][-1]["content"] for output in outputs]
             scores = []
             # TODO: what if the output is malformed?

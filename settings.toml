@@ -43,7 +43,7 @@ metrics = [
 datasets = [
     "royal42/mta-test"
 ]
-llm_judge_model = "Qwen/Qwen3-0.6B"
-judge_prompt_name = "category"
+llm_judge_model = "Qwen/Qwen1.5-0.5B-Chat"
+judge_prompt_name = "scale"
 output_dir = ""
 

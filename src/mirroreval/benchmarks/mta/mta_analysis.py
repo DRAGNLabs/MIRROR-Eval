@@ -1,9 +1,8 @@
 from mirroreval.config import settings
 import json
+import numpy as np
 import pandas as pd
 from pathlib import Path
-from scipy.stats import binomtest
-from mirroreval.benchmarks.creativity.prompts import get_prompt_names
 from mirroreval.logger import logger
 
 
@@ -16,15 +15,34 @@ def load_jsonl(path):
 
 def compute_scores(input_path, output_file):
     df = load_jsonl(input_path)
+    logger.info(f"scores: {df['llm_as_a_judge_score']}")
+    scores = df["llm_as_a_judge_score"].astype(float)
 
-    # save accuracy, confidence intervals, and p-values to a json file
+    total = len(scores)
+    q1, median, q3 = np.percentile(scores, [25, 50, 75])
+    iqr = q3 - q1
+
+    critical_failure = scores.between(1, 2).sum()
+    mediocre = scores.between(3, 5).sum()
+    success = scores.between(6, 7).sum()
+
     accuracy_results = {
-        # TODO: save relevant scores and metadata here
-        "accuracy": 0
+        "total_examples": total,
+        "median": round(float(median), 3),
+        "q1": round(float(q1), 3),
+        "q3": round(float(q3), 3),
+        "iqr": round(float(iqr), 3),
+        "mean": round(scores.mean(), 3),  # type: ignore[arg-type]
+        "std": round(scores.std(), 3),  # type: ignore[arg-type]
+        "critical_failure_count": int(critical_failure),
+        "critical_failure_pct": round(critical_failure / total * 100, 2),
+        "mediocre_count": int(mediocre),
+        "mediocre_pct": round(mediocre / total * 100, 2),
+        "success_count": int(success),
+        "success_pct": round(success / total * 100, 2),
     }
 
     with open(output_file, "a") as f:
-        for result in accuracy_results:
-            f.write(json.dumps(result) + "\n")
+        f.write(json.dumps(accuracy_results) + "\n")
 
     return accuracy_results

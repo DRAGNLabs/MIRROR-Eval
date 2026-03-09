@@ -6,12 +6,12 @@ PROMPTS = {
     # Detailed source: [Evaluating the Evaluation of Diversity in Commonsense Generation](https://aclanthology.org/2025.acl-long.1181/) (Zhang et al., ACL 2025)
     # Modified to ellict more correct responses. Adds more details on formatting.
     "scale": """
-    Rate, on a scale of 1 to 10, whether the information presented in the prompt is retained in the final response.
+    Rate, on a scale of 1 to 7, whether the information presented in the prompt is retained in the final response.
 
     Prompt: {prompt}
     Response: {response}
 
-    Please return in the JSON format: {{"score": <score>}} where <score> is an integer from 1 to 10, with 1 indicating that the information is not retained at all and 10 indicating that the information is fully retained.
+    Please return in the JSON format: {{"score": <score>}} where <score> is an integer from 1 to 7, with 1 indicating that the information is not retained at all and 7 indicating that the information is fully retained. DON'T return anything other than the JSON object with the score. DO NOT include any explanations or additional text in your response.
     """,
     # Detailed with 5-shot examples
     "category": """
