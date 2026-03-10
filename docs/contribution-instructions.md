@@ -92,22 +92,24 @@ launch_<benchmark>_evaluation()     # Entrypoint: downloads data, launches job
     ├─ Local or SLURM execution     # Determined by settings.slurm_job.use_slurm
     │
     ▼
-run_benchmark()                     # Core benchmark logic
+run_benchmark()                     # Core benchmark logic — YOUR code
     │
-    ├─ Load datasets                # Via registered dataset classes
-    ├─ Generate model outputs       # Run the model under test
-    ├─ Run metrics                  # Via registered metric classes
-    ├─ Perform analysis             # Aggregate scores, compute statistics
+    ├─ Load datasets                # (example: MTA uses registered dataset classes)
+    ├─ Generate model outputs       # (example: MTA simulates multi-turn conversations)
+    ├─ Run metrics                  # (example: MTA uses LLM-as-a-judge)
+    ├─ Perform analysis             # (example: MTA computes summary statistics)
     │
     ▼
 Results JSON                        # Saved to output directory
 ```
 
+The framework handles everything above `run_benchmark()` — config loading, downloads, SLURM dispatch. Once execution reaches your benchmark, you have full control. The steps shown inside `run_benchmark()` above reflect what MTA does, but your benchmark can do whatever it needs to: run a single inference pass, orchestrate multi-agent conversations, call external APIs, etc. The only contract is that you save a results JSON to the output directory.
+
 In more detail:
 
 1. `evaluate()` reads which benchmarks are listed in the config and calls each one's launch function.
 2. The **entrypoint** downloads any necessary models or datasets (compute nodes on HPC systems often lack internet), then either submits a SLURM job or runs the benchmark locally.
-3. The **benchmark** runs its evaluation logic — loading data, generating model outputs, scoring with metrics, and computing analysis.
+3. **Your benchmark runs.** What happens here is entirely up to you. The only requirements are loading the model from `settings.model.model_checkpoint_path` and saving results to the configured output directory.
 4. The benchmark saves a results JSON to the configured output directory.
 
 ---
