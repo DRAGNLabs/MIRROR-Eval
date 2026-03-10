@@ -124,6 +124,7 @@ To add a benchmark, complete these six steps:
 4. [Update settings.toml](#4-update-settingstoml)
 5. [Register your benchmark in evaluate.py](#5-register-your-benchmark-in-evaluatepy)
 6. [Write benchmark documentation](#6-write-benchmark-documentation)
+7. [Create a pull request](#7-create-a-pull-request)
 
 ---
 
@@ -156,7 +157,7 @@ Your benchmark directory will contain the bulk of your code. You're free to orga
 
 3. **Provide an entrypoint.** See [step 3](#3-add-an-entrypoint-script).
 
-Review the [MTA benchmark](../src/mirroreval/benchmarks/mta/) to see how these requirements are met in practice. The general flow in `run_benchmark()` is:
+Review the [MTA benchmark](../src/mirroreval/benchmarks/mta/) to see how these requirements are met in practice. The general flow in `run_benchmark()` is below. Keep in mind, this is just an example of what you may do.
 
 ```python
 def run_benchmark():
@@ -282,6 +283,26 @@ Your documentation should cover:
 
 ---
 
+### 7. Create a Pull Request
+
+Once your benchmark is working and documented, push your branch and open a pull request:
+
+```bash
+git add .
+git commit -m "Add <your-benchmark-name> benchmark"
+git push -u origin add-<your-benchmark-name>
+```
+
+Then create a PR on GitHub requesting **@JayOrten** as a reviewer:
+
+```bash
+gh pr create --reviewer JayOrten
+```
+
+Or create the PR through the GitHub web UI and add **JayOrten** as a reviewer manually.
+
+---
+
 ## Utilities
 
 MIRROR-Eval provides several utilities to help structure your benchmark. These are used by the MTA benchmark and serve as good examples.
@@ -289,6 +310,8 @@ MIRROR-Eval provides several utilities to help structure your benchmark. These a
 ### Datasets
 
 An abstract dataset interface is provided at [`benchmarks/interfaces.py`](../src/mirroreval/benchmarks/interfaces.py). Implement this interface to create a dataset class that the framework can discover and instantiate.
+
+**Why use the decorator?** The registration system lets you define multiple dataset classes and then select which ones to use from `settings.toml`. For example, you might register three datasets but only list two in your config — your benchmark iterates over whichever ones the user specifies without changing any code. This is useful when you want to evaluate across different datasets or swap them out for testing.
 
 **The interface:**
 
@@ -355,6 +378,8 @@ The import looks unused, but it triggers the `@register_dataset` decorator.
 ### Metrics
 
 An abstract metric interface is also provided in [`benchmarks/interfaces.py`](../src/mirroreval/benchmarks/interfaces.py). Metrics are callable objects that process benchmark outputs and produce scores.
+
+**Why use the decorator?** Same idea as datasets — you can register multiple metrics and control which ones run from `settings.toml`. If your benchmark supports several scoring approaches (e.g., LLM-as-a-judge, cosine similarity, exact match), register each one and let the config decide which to apply. Your benchmark code just iterates over whatever metrics the user listed.
 
 **The interface:**
 
@@ -466,6 +491,8 @@ Use `download_from_hf` in your entrypoint to ensure models are cached before SLU
 | `submit_slurm_job(rendered_slurm_script)` | Submits the rendered script via `sbatch` |
 
 SLURM parameters are configured in the `[slurm_job]` section of `settings.toml`. Your entrypoint should support both local and SLURM execution paths.
+
+You should not need to interact with Slurm or the Slurm templating code for contribution.
 
 ---
 
