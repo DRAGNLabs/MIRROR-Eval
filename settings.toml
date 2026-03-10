@@ -1,34 +1,76 @@
-# General settings for benchmarks
+# =============================================================================
+# MIRROR-Eval Configuration
+# =============================================================================
+# This file controls the entire evaluation pipeline. Access any value from code
+# via: from mirroreval.config import settings; settings.<section>.<key>
+#
+# The default values here use small models (distilgpt2) for quick pipeline
+# testing. Replace them with larger, instruction-tuned models for meaningful
+# evaluation results.
+
+# --- Model Under Test ---
+[model]
+# HuggingFace model ID or local path for the model being evaluated.
+# Every benchmark is responsible for loading this model itself.
+# Default "distilgpt2" is for pipeline testing only (~82M params, runs on CPU).
+model_checkpoint_path = "distilgpt2"
+
+# --- Benchmark Selection ---
 [benchmarks]
-# benchmarks: which benchmarks to run, by name
+# List of benchmark names to run. Each name must have a corresponding entry
+# in evaluate.py's BENCHMARKS dict and a [<name>] section below.
 benchmarks = [
-    "creativity"
+    "mta"
 ]
 
+# --- SLURM Configuration ---
+# Controls whether benchmarks run locally or are submitted as SLURM jobs
+# on an HPC cluster. When use_slurm is true, a job script is rendered from
+# the Jinja2 template and submitted via sbatch.
 [slurm_job]
-use_slurm = true
+# Set to true to submit benchmarks as SLURM jobs instead of running locally.
+use_slurm = false
+# Name that appears in the SLURM job queue (squeue output).
 job_name = "test_job"
+# Maximum wall-clock time for the job (HH:MM:SS). Job is killed if exceeded.
 time = "01:00:00"
+# Number of tasks (processes) per job. Usually 1 unless using MPI.
 ntasks = 1
+# Number of compute nodes to allocate.
 nodes = 1
+# Memory allocated per CPU core.
 mem_per_cpu = "16G"
+# Number of GPUs to request per node.
 gpus = 1
+# Conda environment to activate inside the SLURM job.
 conda_env = "mirror-eval"
+# Quality of service tier. Leave empty for the cluster's default QOS.
 qos = ""
 
-[creativity]
+# --- MTA Benchmark Settings ---
+# Multi-Turn Accuracy: measures information retention across multi-turn
+# conversations. See docs/benchmarks/multiturn-accuracy.md for details.
+[mta]
+# Which registered metrics to run on the model's responses.
+# Currently available: "llm-as-a-judge"
 metrics = [
     "llm-as-a-judge"
 ]
+# Which registered datasets to evaluate on. Multiple datasets can be listed
+# and the benchmark will iterate through each one.
+# Currently available: "royal42/mta-test"
 datasets = [
-    "gcr-diversity",
-    "mt-eval"
+    "royal42/mta-test"
 ]
-llm_judge_models = [
-    "meta-llama/Llama-3.3-70B-Instruct",
-    "meta-llama/Meta-Llama-3.1-8B-Instruct",
-    "google/gemma-7b-it",
-    "Qwen/Qwen3-30B-A3B-Instruct-2507"
-]
-other_models = []
-output_dir = ""
+# HuggingFace model ID for the LLM judge that scores the model's responses.
+# Should be an instruction-tuned model for meaningful scores. The default
+# "distilgpt2" is for pipeline testing only and will not produce valid JSON.
+llm_judge_model = "distilgpt2"
+# Which prompt template the judge uses. Options:
+#   "scale"    — judge scores 1-7 (continuous quality measure)
+#   "category" — judge answers Yes/No (binary retention check)
+judge_prompt_name = "scale"
+# Directory to write results to. Two files are created:
+#   mta_model_responses.jsonl — per-example model outputs and scores
+#   mta_results.jsonl         — corpus-level summary statistics
+output_dir = "./results/mta"
