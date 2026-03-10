@@ -4,7 +4,7 @@ This guide walks you through adding a new benchmark to the MIRROR-Eval pipeline.
 
 It is expected that the benchmark being contributed has already been developed in a separate codebase. Developing a benchmark within MIRROR-Eval directly is not recommended.
 
-The [MTA benchmark](../src/mirroreval/benchmarks/mta/) is a complete reference implementation. Review it alongside this guide.
+The [MTA benchmark](../src/mirroreval/benchmarks/mta/) is a complete reference implementation. Review it alongside this guide. Disclaimer: MTA is a sample and is not intended to produce meaningful values currently. Additionally, the default models used in [settings.toml](../settings.toml) are very small and not meant to produce meaningful evaluation.
 
 ---
 
