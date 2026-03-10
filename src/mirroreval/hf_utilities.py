@@ -6,25 +6,36 @@ from transformers import pipeline, AutoModel, AutoTokenizer
 from mirroreval.logger import logger
 
 
+def has_chat_template(model_name):
+    """Check if a model's tokenizer supports chat templates."""
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    return tokenizer.chat_template is not None
+
+
+def _try_accelerate():
+    """Check if accelerate is available for device_map='auto'."""
+    try:
+        import accelerate  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 def call_hf_model(model_name, input_text):
     """Call a Hugging Face model for text generation. Simple for single calls."""
-    pipe = pipeline(
-        "text-generation",
-        model=model_name,
-        model_kwargs={"dtype": torch.bfloat16},
-        device_map="auto",
-    )
+    kwargs = {"model_kwargs": {"dtype": torch.bfloat16}}
+    if _try_accelerate():
+        kwargs["device_map"] = "auto"
+    pipe = pipeline("text-generation", model=model_name, **kwargs)
     return pipe(input_text, max_length=50, num_return_sequences=1)
 
 
 def get_hf_pipeline(model_name, task="text-generation"):
     """Get a Hugging Face pipeline for a given model and task. Better for multiple calls."""
-    pipe = pipeline(
-        task,
-        model=model_name,
-        model_kwargs={"dtype": torch.bfloat16},
-        device_map="auto",
-    )
+    kwargs = {"model_kwargs": {"dtype": torch.bfloat16}}
+    if _try_accelerate():
+        kwargs["device_map"] = "auto"
+    pipe = pipeline(task, model=model_name, **kwargs)
     return pipe
 
 

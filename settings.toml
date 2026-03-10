@@ -1,5 +1,5 @@
 [model]
-model_checkpoint_path = "Qwen/Qwen3-0.6B"
+model_checkpoint_path = "distilgpt2"
 
 # General settings for benchmarks
 [benchmarks]
@@ -26,7 +26,7 @@ metrics = [
 datasets = [
     "royal42/mta-test"
 ]
-llm_judge_model = "Qwen/Qwen1.5-0.5B-Chat"
+llm_judge_model = "distilgpt2"
 judge_prompt_name = "scale"
-output_dir = ""
+output_dir = "./results/mta"
 

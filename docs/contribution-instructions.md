@@ -65,7 +65,7 @@ mirroreval.evaluate(config_path)
 
 The configuration file ([settings.toml](../settings.toml)) is central to MIRROR-Eval. It specifies:
 
-- **`model_checkpoint_path`** — the HuggingFace model to evaluate (default: `Qwen/Qwen3-0.6B`)
+- **`model_checkpoint_path`** — the HuggingFace model to evaluate (default: `distilgpt2`)
 - **`benchmarks`** — which benchmarks to run
 - **`slurm_job`** — parameters for running on a compute cluster
 - **Benchmark-specific sections** — datasets, output directories, hyperparameters, etc.
