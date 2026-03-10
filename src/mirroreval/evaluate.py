@@ -1,15 +1,11 @@
 from pathlib import Path
 
-from mirroreval.benchmarks.creativity.creativity_entrypoint import (
-    launch_creativity_evaluation,
-)
 from mirroreval.benchmarks.mta.mta_entrypoint import launch_mta_evaluation
 
 from .config import init_settings, settings
 from .logger import logger
 
 BENCHMARKS = {
-    "creativity": launch_creativity_evaluation,
     "mta": launch_mta_evaluation,
 }
 

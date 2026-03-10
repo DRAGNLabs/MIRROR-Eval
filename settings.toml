@@ -19,23 +19,6 @@ gpus = 1
 conda_env = "mirror-eval"
 qos = ""
 
-[creativity]
-metrics = [
-    "llm-as-a-judge"
-]
-datasets = [
-    "gcr-diversity",
-    "mt-eval"
-]
-llm_judge_models = [
-    "meta-llama/Llama-3.3-70B-Instruct",
-    "meta-llama/Meta-Llama-3.1-8B-Instruct",
-    "google/gemma-7b-it",
-    "Qwen/Qwen3-30B-A3B-Instruct-2507"
-]
-other_models = []
-output_dir = ""
-
 [mta]
 metrics = [
     "llm-as-a-judge"

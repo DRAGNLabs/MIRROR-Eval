@@ -13,7 +13,6 @@ def launch_mta_evaluation():
     download_from_hf(settings.mta.llm_judge_model)
 
     for dataset in settings.mta.datasets:
-        # If the dataset ends with "demo", skip downloading
         load_hf_dataset(dataset)
 
     # Launch evaluation
