@@ -7,3 +7,4 @@ dependencies:
   - pip
   - pip:
     - -e ".[dev]"
+    - --extra-index-url https://download.pytorch.org/whl/cu126
