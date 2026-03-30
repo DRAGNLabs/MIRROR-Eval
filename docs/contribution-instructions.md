@@ -19,16 +19,7 @@ The [MTA benchmark](../src/mirroreval/benchmarks/mta/) is a complete reference i
 
 ## Getting Started
 
-### Create a Branch
-
-```bash
-# Clone the repository
-git clone https://github.com/DRAGNLabs/MIRROR-Eval.git
-cd MIRROR-Eval
-
-# Create a feature branch for your benchmark
-git checkout -b add-<your-benchmark-name>
-```
+### Fork the repo on Github
 
 ### Set Up for Development
 
@@ -285,12 +276,8 @@ Your documentation should cover:
 
 ### 7. Create a Pull Request
 
-Once your benchmark is working and documented, push your branch and open a pull request:
+Once your benchmark is working and documented, open a pull request on Github to merge your forked repo into the main repo.
 
-```bash
-git add .
-git commit -m "Add <your-benchmark-name> benchmark"
-git push -u origin add-<your-benchmark-name>
 ```
 
 Then create a PR on GitHub requesting **@JayOrten** as a reviewer:
@@ -298,8 +285,6 @@ Then create a PR on GitHub requesting **@JayOrten** as a reviewer:
 ```bash
 gh pr create --reviewer JayOrten
 ```
-
-Or create the PR through the GitHub web UI and add **JayOrten** as a reviewer manually.
 
 ---
 
