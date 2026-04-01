@@ -35,7 +35,8 @@ dependencies = [
     "scipy",
     "statsmodels",
     "scikit-learn",
-    "accelerate"
+    "accelerate",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
