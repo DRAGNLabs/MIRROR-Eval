@@ -49,5 +49,5 @@ class MetricInterface(ABC):
     """Abstract base class for metrics."""
 
     @abstractmethod
-    def __call__(self, dataset):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         pass

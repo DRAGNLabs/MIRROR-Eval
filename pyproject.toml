@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
     {name = "Jay Orten", email = "jay.orten@gmail.com"}
+    {name = "Jack Nebeker", email = "thejacknebeker@gmail.com"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -35,7 +36,8 @@ dependencies = [
     "scipy",
     "statsmodels",
     "scikit-learn",
-    "accelerate"
+    "accelerate",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
