@@ -4,10 +4,11 @@ Creativity Benchmark — Main Orchestrator
 This module coordinates the full embedding-based creativity benchmark:
 
   1. Load datasets through the benchmark registry
-  2. Convert multiturn conversations into sentence- or turn-level rows
-  3. Embed the selected text units using the configured embedding model
-  4. Compute registered turn-pair metrics
-  5. Save pairwise outputs and corpus-level summary statistics
+  2. Simulate multi-turn conversations with the model under test
+  3. Convert generated conversations into sentence- or turn-level rows
+  4. Embed the selected text units using the configured embedding model
+  5. Compute registered turn-pair metrics
+  6. Save pairwise outputs and corpus-level summary statistics
 
 This file also acts as the __main__ entry point when launched via SLURM.
 In that mode, the settings file path is passed on the command line and must
@@ -28,6 +29,9 @@ from mirroreval.benchmarks.creativity.creativity_embedding_model import (
 from mirroreval.benchmarks.creativity.creativity_message_processing import (
     build_sentence_rows_for_role,
     build_turn_rows_for_role,
+)
+from mirroreval.benchmarks.creativity.creativity_simulate_conversation import (
+    simulate_conversation,
 )
 from mirroreval.benchmarks.interfaces import DATASETS, METRICS
 from mirroreval.config import init_settings, settings
@@ -104,10 +108,12 @@ def run_benchmark():
     The benchmark reads its configuration from the `[creativity]` section of
     settings.toml. For each configured dataset it:
       1. Loads the dataset class from the global DATASETS registry
-      2. Builds ordered rows for the configured role/mode
-      3. Embeds those rows with the configured model
-      4. Invokes each registered metric to compute turn-pair scores
-      5. Writes enriched pairwise rows to `creativity_pairwise_results.jsonl`
+      2. Simulates conversations with the configured model from the dataset's
+         archetypal prompt turns
+      3. Builds ordered rows for the configured role/mode
+      4. Embeds those rows with the configured embedding model
+      5. Invokes each registered metric to compute turn-pair scores
+      6. Writes enriched pairwise rows to `creativity_pairwise_results.jsonl`
 
     After all datasets are processed, the benchmark aggregates the pairwise
     outputs into a single summary JSON object written to
@@ -125,20 +131,24 @@ def run_benchmark():
     datasets = settings.creativity.datasets
 
     # --- Step 2: Set up output paths ---
-    # Two output files:
+    # Three output files:
+    #   - model_responses_file: simulated conversations in MTA-style JSONL
     #   - pairwise_results_file: intermediate JSONL with one line per ordered
     #     turn-pair comparison and its computed metric values
     #   - summary_file: final JSONL with corpus-level summary statistics
     output_dir = Path(settings.creativity.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    model_responses_file = output_dir / "creativity_model_responses.jsonl"
     pairwise_results_file = output_dir / "creativity_pairwise_results.jsonl"
     summary_file = output_dir / "creativity_summary.jsonl"
 
-    if pairwise_results_file.exists():
-        pairwise_results_file.unlink()
+    # Feedback for the user on if the results file already exists
     if summary_file.exists():
-        summary_file.unlink()
+        logger.info(
+            f"Output file {summary_file} already exists. Skipping benchmark run."
+        )
+        return None
 
     # --- Step 3: Initialize the embedding model ---
     # The creativity benchmark uses an embedding model rather than a judge LLM.
@@ -150,20 +160,34 @@ def run_benchmark():
     )
     embedder = TextEmbedder(model_name=resolved_model_name)
 
-    # --- Step 4: Load and process each dataset ---
+    # --- Step 4: Simulate and process each dataset ---
     # For each configured dataset:
     #   1. Instantiate the registered dataset class
-    #   2. Build either sentence-level or message-level rows, depending on the
+    #   2. Simulate model responses for the dataset's prompt archetypes
+    #   3. Build either sentence-level or message-level rows, depending on the
     #      configured benchmark mode
-    #   3. Embed the ordered text rows
-    #   4. Run every registered metric over the resulting embeddings
+    #   4. Embed the ordered text rows
+    #   5. Run every registered metric over the resulting embeddings
     for dataset_name in datasets:
         logger.info(f"Loading dataset: {dataset_name}")
         if dataset_name not in DATASETS:
+            logger.error(
+                f"Error: Unknown dataset '{dataset_name}' specified in settings."
+            )
             raise ValueError(f"Unknown dataset '{dataset_name}' specified in settings.")
 
+        # DATASETS[name] is a class, not an instance — calling it with ()
+        # creates an instance, which triggers load_data() in __init__.
         dataset = DATASETS[dataset_name]()
-        rows, texts, turn_id_key = _build_rows(dataset.dataset)
+
+        # Run the model under test through every example in this dataset.
+        # The simulator materializes generated `P*`/`R*` turns for embedding
+        # and also writes MTA-style prompt/followup/response records locally.
+        simulated_dataset = simulate_conversation(
+            dataset,
+            output_file=model_responses_file,
+        )
+        rows, texts, turn_id_key = _build_rows(simulated_dataset)
 
         # The rows returned by _build_rows() preserve row_id and turn_id
         # alignment so metric outputs can be traced back to their source
@@ -187,7 +211,12 @@ def run_benchmark():
         # selected by the configured pair_mode.
         for metric_name in metrics:
             if metric_name not in METRICS:
+                logger.error(
+                    f"Error: Unknown metric '{metric_name}' specified in settings."
+                )
                 raise ValueError(f"Unknown metric '{metric_name}' specified in settings.")
+
+            logger.info(f"Running metric: {metric_name}")
 
             metric_rows = METRICS[metric_name]()(  # type: ignore[misc]
                 embeddings=embeddings,

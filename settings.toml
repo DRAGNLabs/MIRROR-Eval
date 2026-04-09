@@ -78,18 +78,22 @@ output_dir = "./results/mta"
 
 # --- Creativity Benchmark Settings ---
 # Embedding-based benchmark ported from MIRROR-CAP. It loads a multiturn
-# conversation dataset, extracts either prompt or response turns, embeds them,
-# and computes turn-pair persistence/novelty/creativity metrics.
+# prompt/archetype dataset, normalizes each example into ordered user turns,
+# simulates responses from the model under test, extracts either prompt or
+# response turns, embeds them, and computes
+# turn-pair persistence/novelty/creativity metrics.
 [creativity]
 # Which registered metrics to run. Currently available:
 #   "embedding-creativity"
 metrics = [
     "embedding-creativity"
 ]
-# Which registered datasets to evaluate on. Currently available:
+# Which registered datasets to evaluate on as prompt/archetype inputs.
+# Currently available:
+#   "jackwarner/creativity-test"
 #   "jackwarner/multi-turn-conversations"
 datasets = [
-    "jackwarner/multi-turn-conversations"
+    "jackwarner/creativity-test"
 ]
 # Which conversation role to score:
 #   "assistant" — evaluate R1/R2/R3/R4...
@@ -114,7 +118,8 @@ max_length = 256
 normalize_embeddings = true
 # Optional cap on the number of embedded rows for smoke tests.
 max_items = 64
-# Directory to write results to. Two files are created:
+# Directory to write results to. Three files are created:
+#   creativity_model_responses.jsonl   — per-conversation simulated dialog
 #   creativity_pairwise_results.jsonl — per-pair metric rows
 #   creativity_summary.jsonl          — benchmark-level aggregate statistics
 output_dir = "./results/creativity"

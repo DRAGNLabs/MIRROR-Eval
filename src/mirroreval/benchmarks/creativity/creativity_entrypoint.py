@@ -10,8 +10,9 @@ It has two purposes:
   2. Launch the benchmark either locally or through SLURM, depending on the
      user configuration in settings.toml.
 
-The benchmark loads a multiturn dataset, extracts turn text, embeds those turns,
-and computes pairwise persistence/novelty/creativity metrics.
+The benchmark loads archetypal prompt turns, simulates model responses,
+embeds the selected conversation turns, and computes pairwise
+persistence/novelty/creativity metrics.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ def launch_creativity_evaluation():
 
     This function mirrors the framework contract used by other benchmarks:
       - resolve and pre-download the embedding model configured for the run
-      - pre-download every configured dataset
+      - pre-download every configured dataset used as prompt/archetype input
       - either submit a SLURM job or execute the benchmark locally
 
     The function is registered in evaluate.py's BENCHMARKS dict under the
