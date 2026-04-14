@@ -20,7 +20,8 @@ model_checkpoint_path = "distilgpt2"
 # List of benchmark names to run. Each name must have a corresponding entry
 # in evaluate.py's BENCHMARKS dict and a [<name>] section below.
 benchmarks = [
-    "mta"
+    "mta",
+    "mqm"
 ]
 
 # --- SLURM Configuration ---
@@ -74,3 +75,28 @@ judge_prompt_name = "scale"
 #   mta_model_responses.jsonl — per-example model outputs and scores
 #   mta_results.jsonl         — corpus-level summary statistics
 output_dir = "./results/mta"
+
+# --- MQM Benchmark Settings ---
+# MT Metric Reliability: measures how well automated MT metrics correlate with
+# human quality judgment for a given translation model. See docs/benchmarks/mqm.md.
+[mqm]
+# Metrics to compute on the model's translations. Options: "bleu", "chrf", "comet"
+# COMET requires unbabel-comet installed and model weights pre-cached on login node.
+metrics = [
+    "bleu",
+    "chrf",
+    "comet"
+]
+# Target languages to translate into. Each must have an entry in FLORES+ and NLLB-200.
+# Supported: de, zh, ru, he, es, cs, tr, uk, ha, km, ps, sw, ht, lo
+languages = [
+    "de", "zh", "es", "cs", "tr", "ha", "km"
+]
+# FLORES+ dataset split to use for source and reference sentences.
+flores_split = "devtest"
+# HuggingFace model ID for the COMET scorer (separate from the model under test).
+comet_model = "Unbabel/wmt22-comet-da"
+# Number of sentences per translation batch.
+translation_batch_size = 32
+# Directory to write results to. Output: mqm_results.json
+output_dir = "./results/mqm"

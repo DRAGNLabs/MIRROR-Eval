@@ -46,6 +46,10 @@ dev = [
     "flake8>=6.0",
     "mypy>=1.0",
 ]
+mqm = [
+    "sacrebleu>=2.3",
+    "unbabel-comet>=2.2",
+]
 
 [project.urls]
 Homepage = "https://github.com/DRAGNLabs/MIRROR-Eval"
