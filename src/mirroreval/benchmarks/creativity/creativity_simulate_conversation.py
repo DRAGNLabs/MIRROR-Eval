@@ -155,7 +155,6 @@ def simulate_conversation(
                 output = pipe(
                     conversation,
                     max_new_tokens=max_new_tokens,
-                    max_length=max_model_len,
                 )
                 assistant_msg = output[0]["generated_text"][-1]["content"]
                 conversation.append({"role": "assistant", "content": assistant_msg})
@@ -189,7 +188,6 @@ def simulate_conversation(
                 output = pipe(
                     conversation_text,
                     max_new_tokens=max_new_tokens,
-                    max_length=max_model_len,
                 )
                 full_text = output[0]["generated_text"]
 
