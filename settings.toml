@@ -90,10 +90,11 @@ metrics = [
 ]
 # Which registered datasets to evaluate on as prompt/archetype inputs.
 # Currently available:
+#   "jackwarner/creativity-smoke-test"
 #   "jackwarner/creativity-test"
 #   "jackwarner/multi-turn-conversations"
 datasets = [
-    "jackwarner/creativity-test"
+    "jackwarner/creativity-smoke-test"
 ]
 # Which conversation role to score:
 #   "assistant" — evaluate R1/R2/R3/R4...
