@@ -13,7 +13,9 @@
 # HuggingFace model ID or local path for the model being evaluated.
 # Every benchmark is responsible for loading this model itself.
 # Default "distilgpt2" is for pipeline testing only (~82M params, runs on CPU).
-model_checkpoint_path = "distilgpt2"
+model_checkpoint_path = "Qwen/Qwen2.5-3B-Instruct"
+# Quantization for the model under test: "4bit", "8bit", or "" for none.
+model_quantize = ""
 
 # --- Benchmark Selection ---
 [benchmarks]
@@ -51,26 +53,36 @@ qos = ""
 # Multi-Turn Accuracy: measures information retention across multi-turn
 # conversations. See docs/benchmarks/multiturn-accuracy.md for details.
 [mta]
-# Which registered metrics to run on the model's responses.
-# Currently available: "llm-as-a-judge"
-metrics = [
-    "llm-as-a-judge"
-]
-# Which registered datasets to evaluate on. Multiple datasets can be listed
-# and the benchmark will iterate through each one.
-# Currently available: "royal42/mta-test"
-datasets = [
-    "royal42/mta-test"
-]
-# HuggingFace model ID for the LLM judge that scores the model's responses.
-# Should be an instruction-tuned model for meaningful scores. The default
-# "distilgpt2" is for pipeline testing only and will not produce valid JSON.
-llm_judge_model = "distilgpt2"
-# Which prompt template the judge uses. Options:
-#   "scale"    — judge scores 1-7 (continuous quality measure)
-#   "category" — judge answers Yes/No (binary retention check)
-judge_prompt_name = "scale"
-# Directory to write results to. Two files are created:
-#   mta_model_responses.jsonl — per-example model outputs and scores
-#   mta_results.jsonl         — corpus-level summary statistics
+# Which registered dataset to evaluate on.
+dataset = "royal42/mta"
+# Partner backend: "local" for a HuggingFace model, "openai" for the OpenAI API.
+# When using "openai", set the OPENAI_API_KEY environment variable.
+partner_backend = "openai"
+# Partner model: HF model ID (local) or OpenAI model name (openai).
+partner_checkpoint_path = "gpt-4o-mini"
+# Quantization for the partner model: "4bit", "8bit", or "" for none.
+# Only used when partner_backend = "local".
+partner_quantize = ""
+# Number of back-and-forth exchanges per conversation.
+num_conversation_turns = 5
+# Probe activation source: controls which hidden-state activations the probes
+# are applied to during conversation evaluation.
+#   "full_context"    — last-token activations from the full conversation prefill
+#                       (original prompt + all prior turns). This is the default
+#                       and original behavior.
+#   "isolated_turn"   — last-token activations from a separate forward pass that
+#                       encodes only the current turn (latest user message +
+#                       model response), with no conversation history. Tests
+#                       whether the fact is present in the current exchange
+#                       rather than carried over from the original prompt.
+probe_activation_source = "full_context"
+# Directory to write results to. Files created:
+#   mta_results.json     — final results with metadata and per-turn records
+#   mta_progress.jsonl   — incremental progress (one line per turn, crash-safe)
+#
+# Every run additionally trains shuffled-label probes and applies them alongside
+# the real probes (N2 legitimacy control), and simulates one cross-fact control
+# conversation per fact (N1 selectivity control). Results for all three are
+# written to the same mta_results.json, distinguished by the `probe_type` and
+# `is_control` fields on each turn record.
 output_dir = "./results/mta"
