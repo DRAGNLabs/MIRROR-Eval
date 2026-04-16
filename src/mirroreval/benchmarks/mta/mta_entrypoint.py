@@ -47,4 +47,4 @@ def launch_mta_evaluation():
         )
         submit_slurm_job(rendered_slurm_script)
     else:
-        run_benchmark()
+        return run_benchmark()

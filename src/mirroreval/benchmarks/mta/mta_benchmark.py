@@ -25,6 +25,7 @@ from mirroreval.benchmarks.mta.mta_simulate_conversation import simulate_convers
 from mirroreval.benchmarks.mta.mta_probes import train_probes, apply_probes
 from mirroreval.hf_utilities import has_chat_template
 from mirroreval.partner import get_partner
+from mirroreval.benchmarks.mta.mta_analysis import analyze_results
 from mirroreval.logger import logger
 
 
@@ -43,7 +44,11 @@ def run_benchmark():
         logger.info(
             f"Output file {output_file} already exists. Skipping benchmark run."
         )
-        return
+        summary_file = output_dir / "mta_summary.json"
+        if summary_file.exists():
+            with open(summary_file, "r") as f:
+                return json.load(f)
+        return None
 
     # --- Load models once ---
     model_quantize = settings.model.model_quantize or None
@@ -233,13 +238,17 @@ def run_benchmark():
         "turns": all_turns,
     }
 
-    # TODO: analyze in a notebook first
-
     with open(output_file, "w") as f:
         json.dump(final_results, f, indent=2)
-
     logger.info(f"Results written to {output_file}")
-    return final_results
+
+    summary = analyze_results(final_results)
+    summary_file = output_dir / "mta_summary.json"
+    with open(summary_file, "w") as f:
+        json.dump(summary, f, indent=2)
+    logger.info(f"Summary written to {summary_file}")
+
+    return summary
 
 
 if __name__ == "__main__":
