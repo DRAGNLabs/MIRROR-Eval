@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Any, Iterator, Optional, Dict, Type
+from typing import Any, Iterator, Optional, Dict, Type, TypeVar
 
 DATASETS: Dict[str, Type["DatasetInterface"]] = {}
 METRICS: Dict[str, Type["MetricInterface"]] = {}
+
+D = TypeVar("D", bound="DatasetInterface")
+M = TypeVar("M", bound="MetricInterface")
 
 
 def register_dataset(name: str):
     """Decorator to register a dataset class by name."""
 
-    def decorator(cls: Type["DatasetInterface"]):
+    def decorator(cls: Type["D"]) -> Type["D"]:
         DATASETS[name] = cls
         return cls
 
@@ -18,7 +21,7 @@ def register_dataset(name: str):
 def register_metric(name: str):
     """Decorator to register a metric function by name."""
 
-    def decorator(cls: Type["MetricInterface"]):
+    def decorator(cls: Type["M"]) -> Type["M"]:
         METRICS[name] = cls
         return cls
 

@@ -1,0 +1,39 @@
+# =============================================================================
+# MIRROR-Eval Configuration — MTA run: isolated_turn activations
+# =============================================================================
+# Each run computes real results, N1 cross-fact control, and N2 shuffled-label
+# control in one pass. All three streams land in the same mta_results.json,
+# tagged by (probe_type, is_control).
+#
+# Variant field vs. settings.toml:
+#   probe_activation_source = "isolated_turn"
+#   output_dir              = "./results/mta/isolated_turn"
+
+[model]
+model_checkpoint_path = "Qwen/Qwen2.5-3B-Instruct"
+model_quantize = ""
+
+[benchmarks]
+benchmarks = [
+    "mta"
+]
+
+[slurm_job]
+use_slurm = false
+job_name = "mta_isolated_turn"
+time = "01:00:00"
+ntasks = 1
+nodes = 1
+mem_per_cpu = "16G"
+gpus = 1
+conda_env = "mirror-eval"
+qos = ""
+
+[mta]
+dataset = "royal42/mta"
+partner_backend = "openai"
+partner_checkpoint_path = "gpt-4o-mini"
+partner_quantize = ""
+num_conversation_turns = 5
+probe_activation_source = "isolated_turn"
+output_dir = "./results/mta/isolated_turn"

@@ -26,13 +26,14 @@ def launch_mta_evaluation():
     # --- Step 1: Pre-download artifacts ---
     # download_from_hf caches the model via huggingface_hub.snapshot_download.
     # This ensures the model weights are available offline when SLURM jobs run.
-    logger.info(f"Ensuring model is downloaded: {settings.mta.llm_judge_model}")
-    download_from_hf(settings.mta.llm_judge_model)
+    # Only needed for locally-loaded models — OpenAI partners use the API.
+    if settings.mta.partner_backend == "local":
+        logger.info(f"Ensuring model is downloaded: {settings.mta.partner_checkpoint_path}")
+        download_from_hf(settings.mta.partner_checkpoint_path)
 
     # Also pre-download every dataset listed in the config. Like models, these
     # need to be cached before compute nodes try to access them.
-    for dataset in settings.mta.datasets:
-        load_hf_dataset(dataset)
+    load_hf_dataset(settings.mta.dataset)
 
     # --- Step 2: Launch the benchmark ---
     # The config's slurm_job.use_slurm flag determines the execution path.
@@ -46,4 +47,4 @@ def launch_mta_evaluation():
         )
         submit_slurm_job(rendered_slurm_script)
     else:
-        run_benchmark()
+        return run_benchmark()

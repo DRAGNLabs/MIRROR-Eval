@@ -12,40 +12,67 @@ To add a new dataset for MTA, define a new class here with @register_dataset
 and add the corresponding name to settings.toml under [mta].datasets.
 """
 
-from typing import Any, Iterator
+import pandas as pd
+
+from typing import Any, Iterator, Tuple
 
 from mirroreval.benchmarks.interfaces import DatasetInterface, register_dataset
 from mirroreval.hf_utilities import load_hf_dataset
 
 
-# The string "royal42/mta-test" must match exactly what appears in
-# settings.toml's [mta].datasets list. This is how the benchmark knows
-# which class to instantiate for a given dataset name.
-@register_dataset("royal42/mta-test")
-class MTA_test(DatasetInterface):
+@register_dataset("royal42/mta")
+class MTA(DatasetInterface):
     def __init__(self):
         self.dataset = None
-        # load_data is called immediately on construction so the dataset
-        # is ready to iterate as soon as the instance is created.
         self.load_data()
 
     def load_data(self) -> None:
-        # Loads the dataset from HuggingFace Hub. The data is cached locally
-        # after the first download (which is handled by the entrypoint).
-        self.dataset = load_hf_dataset("royal42/mta-test")
+        raw = load_hf_dataset("royal42/mta")
+        df = raw["train"].to_pandas()
+        assert isinstance(df, pd.DataFrame)
+        self.dataset = df
 
     def __iter__(self) -> Iterator[dict[str, Any]]:
-        """
-        Yield one example at a time as a plain dict.
+        if self.dataset is None:
+            raise ValueError("Dataset not loaded. Call load_data() first.")
+        for _, row in self.dataset.iterrows():
+            yield row.to_dict()
 
-        Each example contains:
-          - "prompt": the initial user message
-          - "followup_1", "followup_2", "followup_3": subsequent user messages
+    def iter_fact_id(self) -> Iterator[str]:
+        """Yield each unique fact_id in the dataset."""
+        if self.dataset is None:
+            raise ValueError("Dataset not loaded. Call load_data() first.")
+        yield from self.dataset["fact_id"].unique()
 
-        Batching is NOT handled here — that is the responsibility of whatever
-        consumes the dataset (e.g., simulate_conversation or a metric).
+    def get_splits(
+        self,
+        fact_id: str,
+        probe_frac: float = 0.6,
+        n_eval: int = 5,
+        seed: int = 42,
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Split rows for a given fact_id into probe-training and eval sets.
+
+        Args:
+            fact_id: Which fact to filter to.
+            probe_frac: Fraction of rows allocated to probe training.
+            n_eval: Number of rows to sample from the remainder for evaluation.
+            seed: Random seed for reproducibility.
+
+        Returns:
+            (probe_df, eval_df) with non-overlapping indices.
         """
         if self.dataset is None:
             raise ValueError("Dataset not loaded. Call load_data() first.")
-        for example in self.dataset["train"]:
-            yield example
+
+        fact_rows = self.dataset[self.dataset["fact_id"] == fact_id]
+        shuffled = fact_rows.sample(frac=1.0, random_state=seed)
+
+        split_idx = int(len(shuffled) * probe_frac)
+        probe_df = shuffled.iloc[:split_idx]
+        remainder = shuffled.iloc[split_idx:]
+
+        n_eval = min(n_eval, len(remainder))
+        eval_df = remainder.head(n_eval)
+
+        return probe_df, eval_df

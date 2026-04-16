@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset
 from huggingface_hub import snapshot_download
-from transformers import pipeline, AutoModel, AutoTokenizer
+from transformers import pipeline, AutoModel, AutoTokenizer, BitsAndBytesConfig
 
 from mirroreval.logger import logger
 
@@ -30,9 +30,28 @@ def call_hf_model(model_name, input_text):
     return pipe(input_text, max_length=50, num_return_sequences=1)
 
 
-def get_hf_pipeline(model_name, task="text-generation"):
-    """Get a Hugging Face pipeline for a given model and task. Better for multiple calls."""
-    kwargs = {"model_kwargs": {"dtype": torch.bfloat16}}
+def get_hf_pipeline(model_name, task="text-generation", quantize=None):
+    """Get a Hugging Face pipeline for a given model and task.
+
+    Args:
+        model_name: HuggingFace model ID or local path.
+        task: Pipeline task type.
+        quantize: None for no quantization, "4bit" or "8bit" for bitsandbytes quantization.
+    """
+    model_kwargs = {}
+    if quantize == "4bit":
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+    elif quantize == "8bit":
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_8bit=True,
+        )
+    else:
+        model_kwargs["dtype"] = torch.bfloat16
+
+    kwargs = {"model_kwargs": model_kwargs}
     if _try_accelerate():
         kwargs["device_map"] = "auto"
     pipe = pipeline(task, model=model_name, **kwargs)
