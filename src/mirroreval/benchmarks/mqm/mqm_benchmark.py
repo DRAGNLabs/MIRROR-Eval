@@ -43,6 +43,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+import torch
+from transformers import pipeline as hf_pipeline
+
 from mirroreval.config import init_settings, settings
 from mirroreval.benchmarks.interfaces import METRICS, DATASETS
 from mirroreval.logger import logger
@@ -108,9 +111,6 @@ def _translate_with_model(sources: list[str], nllb_tgt_lang: str,
 
     Returns a list of translated strings in the same order as sources.
     """
-    from transformers import pipeline as hf_pipeline
-    import torch
-
     logger.info(
         f"Translating {len(sources)} sentences to {nllb_tgt_lang} "
         f"with {model_name}..."
@@ -169,6 +169,14 @@ def _build_reliability_section(langs: list[str]) -> dict:
 
 
 def _recommendation(langs: list[str]) -> str:
+    """Return a plain-English metric recommendation for the evaluated language set.
+
+    COMET is always recommended because our meta-evaluation found it statistically
+    outperforms BLEU and ChrF at p ≈ 0 (Williams test) for every language
+    evaluated — high, medium, and low resource alike. The recommendation text
+    includes the resource tier(s) of the evaluated languages and a note on when
+    surface-form metrics remain useful (fast, no GPU, no model weights needed).
+    """
     tiers = {RESOURCE_TIERS.get(l, "low") for l in langs}
     tier_str = " / ".join(sorted(tiers))
     return (

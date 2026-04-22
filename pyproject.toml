@@ -35,7 +35,9 @@ dependencies = [
     "scipy",
     "statsmodels",
     "scikit-learn",
-    "accelerate"
+    "accelerate",
+    "sacrebleu>=2.3",
+    "unbabel-comet>=2.2",
 ]
 
 [project.optional-dependencies]
@@ -45,10 +47,6 @@ dev = [
     "black>=23.0",
     "flake8>=6.0",
     "mypy>=1.0",
-]
-mqm = [
-    "sacrebleu>=2.3",
-    "unbabel-comet>=2.2",
 ]
 
 [project.urls]

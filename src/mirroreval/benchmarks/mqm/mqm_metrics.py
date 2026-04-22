@@ -49,7 +49,8 @@ class BLEUMetric(MetricInterface):
             ref = seg.get("reference", "")
             try:
                 score = sacrebleu.sentence_bleu(hyp, [ref]).score
-            except Exception:
+            except Exception as exc:
+                logger.warning(f"BLEU scoring failed for segment (hyp={hyp!r:.40}): {exc}")
                 score = 0.0
             seg["bleu_score"] = score
         return segments
@@ -79,7 +80,8 @@ class ChrFMetric(MetricInterface):
             ref = seg.get("reference", "")
             try:
                 score = chrf.sentence_score(hyp, [ref]).score
-            except Exception:
+            except Exception as exc:
+                logger.warning(f"ChrF scoring failed for segment (hyp={hyp!r:.40}): {exc}")
                 score = 0.0
             seg["chrf_score"] = score
         return segments

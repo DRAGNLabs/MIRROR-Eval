@@ -32,9 +32,25 @@ COMET's advantage is statistically significant at p ≈ 0 for all languages.
 
 ## Requirements
 
-- The model under test must be an **NLLB-200-style seq2seq translation model**
-  loadable via `transformers.pipeline("translation", src_lang=..., tgt_lang=...)`.
-  Recommended: `facebook/nllb-200-distilled-600M` or `facebook/nllb-200-3.3B`.
+### Model interface
+
+The model under test must satisfy two requirements:
+
+1. **Loadable as a HuggingFace translation pipeline** — the benchmark calls:
+   ```python
+   pipeline("translation", model=model_checkpoint_path,
+            src_lang="eng_Latn", tgt_lang="<nllb_code>")
+   ```
+   so the model must accept `src_lang` / `tgt_lang` keyword arguments.
+
+2. **Uses NLLB-style language codes** — target languages are specified as
+   4-letter script-tagged BCP-47 codes (e.g. `"deu_Latn"`, `"zho_Hans"`,
+   `"arb_Arab"`). Models that use different tag formats (e.g. mBART-50's
+   `"de_DE"`) are not directly compatible without a wrapper.
+
+The simplest compatible model is `facebook/nllb-200-distilled-600M`. Any
+model fine-tuned on top of NLLB-200 that preserves the HuggingFace
+`transformers.pipeline` interface will also work.
 - `sacrebleu` — for BLEU and ChrF: `pip install sacrebleu`
 - `unbabel-comet` — for COMET: `pip install unbabel-comet`
 - COMET model weights must be pre-downloaded on a login node before running
